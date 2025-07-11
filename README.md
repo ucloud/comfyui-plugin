@@ -15,7 +15,7 @@ Now we do support following models:
 
 You can find the corresponding nodes in our node set.
 
-Note: (Multi-inputs) uses same node as normal (single input). Please check out the example workflow hidden in the following images.
+Note: (Multi-inputs) uses same node as normal (single input). Please check out the example workflow hidden in the images below.
 
 ## Instruction
 
@@ -35,8 +35,19 @@ Note: (Multi-inputs) uses same node as normal (single input). Please check out t
     python main.py
     ```
 
-4. Build your own workflow with Modelverse nodes. You can check the following images, drag them into ComfyUI GUI and autoload example workflows.
+4. Build your own workflow with Modelverse nodes. You can check the following images, drag them into ComfyUI GUI and autoload example workflows. Don't forget to enter your `API_KEY` in the `Modelverse Client` node.
 
     | Flux Dev | Flux Kontext Pro | Flux Kontext Max (Multi-inputs) |
     |:-:|:-:|:-:|
     | <img src="assets/flux_dev.png"  width="200" height="200"> | <img src="assets/flux_kontext_pro_single.png"  width="200" height="200"> | <img src="assets/flux_kontext_max_multi.png"  width="200" height="200"> |
+
+    In case the above images does not work for you, check the screenshot below:
+
+    Text-to-Image with Flux Dev
+    ![Text-to-Image](assets/screenshot-flux_dev.png)
+
+    Single image editting with Flux Kontext Pro
+    ![single-input](assets/screenshot-flux_kontext_pro.png)
+
+    Multi image editting with Flux Kontext Max
+    ![Multi-inputs](assets/screenshot-flux_kontext_max.png)
