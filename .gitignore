@@ -1,0 +1,4 @@
+.DS_Store
+py/__pycache__
+py/modelverse_api/__pycache__
+py/modelverse_api/requests/__pycache__
