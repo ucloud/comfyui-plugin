@@ -1,0 +1,15 @@
+[project]
+name = "ucloud-comfyui"
+description = "This is a set of ComfyUI nodes for UCloud Moderlverse Image generation model API."
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["requests", "pillow"]
+
+[project.urls]
+Repository = "https://github.com/ucloud/ucloud-comfyui"
+
+[tool.comfy]
+PublisherId = "ucloud-modelverse"
+DisplayName = "ucloud-comfyui"
+Icon = ""
+includes = []
