@@ -21,17 +21,19 @@ Note: (Multi-inputs) uses same node as normal (single input). Please check out t
 
 1. Install ComfyUI, please refer to [ComfyUI official github](https://github.com/comfyanonymous/ComfyUI).
 
-2. Change to ComfyUI/custom_nodes directory, and clone this repo.
+2. Change to `ComfyUI/custom_nodes` directory, and clone this repo, install required python packages.
 
     ```
-    cd ComfyUI/custom_nodes
+    cd ～/ComfyUI/custom_nodes
     git clone https://github.com/ucloud/ucloud-comfyui.git
+    cd ./ucloud-comfyui
+    pip install -r requirements.txt
     ```
 
-3. Start ComfyUI service, use browser to open `localhost:8188`.
+3. Back to `ComfyUI` directory, start ComfyUI service, use web browser to open `localhost:8188`.
 
     ```
-    cd ../ComfyUI
+    cd ～/ComfyUI
     python main.py
     ```
 
