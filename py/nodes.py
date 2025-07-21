@@ -1,11 +1,5 @@
 import os
-import requests
 import configparser
-import folder_paths
-import time
-import torchaudio
-from .modelverse_api.client import ModelverseClient
-# from .modelverse_api.utils import tensor2images
 
 try:
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -76,6 +70,7 @@ class ModelverseAPIClient:
             "api_key": modelverse_api_key
         },)
 
+
 class ModelverseImagePacker:
     """
     Ucloud Modelverse Image Packer
@@ -94,13 +89,13 @@ class ModelverseImagePacker:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "images1": ("IMAGE,IMAGE_LIST", {"tooltip":"The first image/list to be packed together. Add more if you need."})
+                "images1": ("IMAGE,IMAGE_LIST", {"tooltip": "The first image/list to be packed together. Add more if you need."})
             },
             "optional": {
-                "images2": ("IMAGE,IMAGE_LIST", {"default": None, "tooltip":"The second image/list to be packed together."}),
-                "images3": ("IMAGE,IMAGE_LIST", {"default": None, "tooltip":"The third image/list to be packed together."}),
-                "images4": ("IMAGE,IMAGE_LIST", {"default": None, "tooltip":"The fourth image/list to be packed together."}),
-                "images5": ("IMAGE,IMAGE_LIST", {"default": None, "tooltip":"The fifth image/list to be packed together."})
+                "images2": ("IMAGE,IMAGE_LIST", {"default": None, "tooltip": "The second image/list to be packed together."}),
+                "images3": ("IMAGE,IMAGE_LIST", {"default": None, "tooltip": "The third image/list to be packed together."}),
+                "images4": ("IMAGE,IMAGE_LIST", {"default": None, "tooltip": "The fourth image/list to be packed together."}),
+                "images5": ("IMAGE,IMAGE_LIST", {"default": None, "tooltip": "The fifth image/list to be packed together."})
             }
         }
 
@@ -113,14 +108,14 @@ class ModelverseImagePacker:
 
     def pack_images(self,
                     images1,
-                    images2=None, 
-                    images3=None, 
-                    images4=None, 
+                    images2=None,
+                    images3=None,
+                    images4=None,
                     images5=None
                     ):
 
         # 把单个IMAGE转成单元素list,便于之后统一extend
-        to_list = lambda x: x if isinstance(x, list) else [x]
+        def to_list(x): return x if isinstance(x, list) else [x]
 
         result = []
         for i in (images1, images2, images3, images4, images5):

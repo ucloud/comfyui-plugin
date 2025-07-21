@@ -4,6 +4,7 @@ from .modelverse_api.requests.step1x_edit import Step1xEdit
 import torch
 import asyncio
 
+
 class Step1xEditNode:
     """
     Step1X Edit Node
@@ -79,13 +80,13 @@ class Step1xEditNode:
         client = ModelverseClient(client["api_key"])
 
         tasks = [client.async_send_request(Step1xEdit(
-                prompt=prompt,
-                image=image,
-                negative_prompt=negative_prompt,
-                guidance_scale=guidance_scale,
-                num_inference_steps=num_inference_steps,
-                seed=seed+i,
-            ))
+            prompt=prompt,
+            image=image,
+            negative_prompt=negative_prompt,
+            guidance_scale=guidance_scale,
+            num_inference_steps=num_inference_steps,
+            seed=seed+i,
+        ))
             for i in range(num_requests)]
 
         image_urls = asyncio.run(client.run_tasks(tasks))
@@ -93,12 +94,14 @@ class Step1xEditNode:
         output_images_list = []
         for image_url in image_urls:
             if not image_url:
-                print("WARN:", "No image URLs in the generated result in current request. Skipping...")
+                print(
+                    "WARN:", "No image URLs in the generated result in current request. Skipping...")
             output_images = imageurl2tensor(image_url)
             output_images_list.append(output_images)
-        print("INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
+        print(
+            "INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
         return (torch.cat(output_images_list, dim=0),)
-    
+
 
 NODE_CLASS_MAPPINGS = {
     "Modelverse Step1xEditNode": Step1xEditNode
