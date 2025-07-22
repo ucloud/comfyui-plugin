@@ -19,7 +19,9 @@ Note: (Multi-inputs) uses same node as normal (single input). Please check out t
 
 ## Instruction
 
-1. Install ComfyUI, please refer to [ComfyUI official github](https://github.com/comfyanonymous/ComfyUI).
+1. Install ComfyUI, please refer to [ComfyUI official github](https://github.com/comfyanonymous/ComfyUI). 
+
+    Notice: this node plugin is only designed for ComfyUI version earlier than v0.3.44, please specify the release sersion when cloning. (e.g. `git clone -b v0.3.44 https://github.com/comfyanonymous/ComfyUI.git`)
 
 2. Change to `ComfyUI/custom_nodes` directory, and clone this repo, install required python packages.
 
