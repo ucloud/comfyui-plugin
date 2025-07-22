@@ -12,7 +12,7 @@ from typing import List
 def imageurl2tensor(image_urls: List[dict]):
     if not image_urls:
         return torch.zeros((1, 3, 1, 1))  # 返回一个1x3x1x1的黑色tensor
-    
+
     print("INFO:", "output image_urls:", image_urls)
     images = []
     for url_dict in image_urls:
@@ -22,7 +22,8 @@ def imageurl2tensor(image_urls: List[dict]):
         except:
             continue
         images.append(image)
-    print("INFO:", f"{len(images)} of {len(image_urls)} output images loaded successfully.")
+    print(
+        "INFO:", f"{len(images)} of {len(image_urls)} output images loaded successfully.")
     if len(images) != len(image_urls):
         print("WARN:", f"{len(image_urls) - len(images)} of {len(image_urls)} output image urls cannot be loaded in GUI.\nPlease check console for image_urls manually.")
     return images2tensor(images)
@@ -33,7 +34,8 @@ def fetch_image(url, stream=True):
 
 
 def tensor2images(tensor):
-    np_imgs = numpy.clip(tensor.cpu().numpy() * 255.0, 0.0, 255.0).astype(numpy.uint8)
+    np_imgs = numpy.clip(tensor.cpu().numpy() * 255.0,
+                         0.0, 255.0).astype(numpy.uint8)
     return [PIL.Image.fromarray(np_img) for np_img in np_imgs]
 
 
@@ -66,8 +68,10 @@ def encode_image(img, mask=None):
         data_bytes = bytes_io.getvalue()
     return data_bytes, format
 
+
 def decorate_base64(base64, format="JPEG"):
     return f"data:image/{format};base64,{base64}"
+
 
 def image_to_base64(image):
     if image is None:
@@ -75,13 +79,15 @@ def image_to_base64(image):
     data_bytes, format = encode_image(tensor2images(image)[0])
     return decorate_base64(base64.b64encode(data_bytes).decode("utf-8"), format=format)
 
+
 def image_to_base64s(tensor):
     if tensor is None:
         return None
     images = tensor2images(tensor)
     data_bytes_list = [encode_image(image) for image in images]
-    return [decorate_base64(base64.b64encode(data_bytes).decode("utf-8"), format=format) for data_bytes, format in data_bytes_list] 
+    return [decorate_base64(base64.b64encode(data_bytes).decode("utf-8"), format=format) for data_bytes, format in data_bytes_list]
     # return [base64.b64encode(encode_image(image)).decode("utf-8") for image in images]
+
 
 def check_lora_path(path):
     """Checks if the LoRA path is valid."""
@@ -92,7 +98,8 @@ def check_lora_path(path):
         parts = path.split('/')
         if len(parts) == 2 and all(part.strip() for part in parts):
             return path
-    raise ValueError("Invalid LoRA path format. It should be either a full URL or in the format 'username/model-name'.")
+    raise ValueError(
+        "Invalid LoRA path format. It should be either a full URL or in the format 'username/model-name'.")
 
 
 def normalization_loras(loras, scale_max, scale_default):
@@ -108,8 +115,10 @@ def normalization_loras(loras, scale_max, scale_default):
             if lora_path:
                 lora_scale = lora.get("scale", scale_default)
                 if lora_scale < 0 or lora_scale > scale_max:
-                    raise ValueError(f"Invalid {lora_path} LoRA scale. It should be between 0 and {scale_max}.")
-                _loras.append({"path": check_lora_path(lora_path), "scale": lora_scale})
+                    raise ValueError(
+                        f"Invalid {lora_path} LoRA scale. It should be between 0 and {scale_max}.")
+                _loras.append({"path": check_lora_path(
+                    lora_path), "scale": lora_scale})
 
     return _loras
 

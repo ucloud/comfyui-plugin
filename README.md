@@ -37,7 +37,7 @@ Note: (Multi-inputs) uses same node as normal (single input). Please check out t
     python main.py
     ```
 
-4. Build your own workflow with Modelverse nodes. You can check the following images, drag them into ComfyUI GUI and autoload example workflows. Don't forget to enter your `API_KEY` in the `Modelverse Client` node.
+4. Build your own workflow with Modelverse nodes. You can check the following images, drag them into ComfyUI GUI and autoload example workflows. Don't forget to enter your `API_KEY` in the `Modelverse Client` node. If you wish to hide your `API_KEY` instead of showing it in GUI, alternatively you can write it in `config.ini` for `MODELVERSE_API_KEY` value.
 
     | Flux Dev | Flux Kontext Pro | Flux Kontext Max (Multi-inputs) |
     |:-:|:-:|:-:|
@@ -53,3 +53,5 @@ Note: (Multi-inputs) uses same node as normal (single input). Please check out t
 
     Multi image editting with Flux Kontext Max
     ![Multi-inputs](assets/screenshot-flux_kontext_max.png)
+
+    

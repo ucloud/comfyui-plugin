@@ -22,11 +22,11 @@ class ModelverseClient:
             api_key (str): Modelverse API key
         """
         self.api_key = api_key
-        self.once_timeout = 1800  # Default timeout is 1800 seconds (30 minutes)
 
-        self.headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        self.headers = {"Authorization": f"Bearer {api_key}",
+                        "Content-Type": "application/json"}
 
-    def post(self, payload, timeout=120):
+    def post(self, payload, timeout=180):
         """
         Send POST request to Modelverse API
 
@@ -39,7 +39,8 @@ class ModelverseClient:
             dict: API response
         """
         url = f"{self.BASE_URL}{self.API_PATH}"
-        response = requests.post(url, headers=self.headers, json=payload, timeout=timeout)
+        response = requests.post(
+            url, headers=self.headers, json=payload, timeout=timeout)
 
         if response.status_code == 401:
             raise Exception("Unauthorized: Invalid API key")
@@ -59,7 +60,8 @@ class ModelverseClient:
             if response_data['code'] == 401:
                 raise Exception("Unauthorized: Invalid API key")
             if response_data['code'] != 200:
-                raise Exception(f"API Error: {response_data.get('message', 'Unknown error')}")
+                raise Exception(
+                    f"API Error: {response_data.get('message', 'Unknown error')}")
             return response_data.get('data', {})
         return response_data
 
@@ -79,7 +81,7 @@ class ModelverseClient:
 
         response = self.post(payload)
         return response.get("data", [])
-    
+
     async def run_tasks(self, tasks):
         print("INFO:", f"Sending {len(tasks)} request(s) concurrently...")
         results = await asyncio.gather(*tasks)

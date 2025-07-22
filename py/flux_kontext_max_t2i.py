@@ -4,6 +4,7 @@ from .modelverse_api.requests.flux_kontext_max import FluxKontextMaxT2I
 import torch
 import asyncio
 
+
 class FluxKontextMaxT2INode:
     """
     Flux Image Generator Node (Kontext Max) for text2image task.
@@ -20,7 +21,7 @@ class FluxKontextMaxT2INode:
                 "prompt": ("STRING", {"multiline": True, "default": "", "tooltip": "Text description of the image to generate"}),
                 "aspect_ratio": (["21:9", "16:9", "16:10", "4:3", "1:1", "3:4", "10:16", "9:16", "9:21"], {
                     "default": "1:1",
-                    "tooltip": "The aspect ratio of the output image, ranging from \"21:9\" to \"9:21\", default is \"1:1\""                
+                    "tooltip": "The aspect ratio of the output image, ranging from \"21:9\" to \"9:21\", default is \"1:1\""
                 }),
                 "num_images": ("INT", {
                     "default": 1,
@@ -75,16 +76,16 @@ class FluxKontextMaxT2INode:
             raise ValueError("Prompt is required")
 
         print("INFO:", "Running Flux Kontext Max text-to-image mode.")
-        
+
         client = ModelverseClient(client["api_key"])
 
         tasks = [client.async_send_request(FluxKontextMaxT2I(
-                prompt=prompt,
-                aspect_ratio=aspect_ratio,
-                num_images=num_images,
-                guidance_scale=guidance_scale,
-                seed=seed+i,
-            ))
+            prompt=prompt,
+            aspect_ratio=aspect_ratio,
+            num_images=num_images,
+            guidance_scale=guidance_scale,
+            seed=seed+i,
+        ))
             for i in range(num_requests)]
 
         image_urls = asyncio.run(client.run_tasks(tasks))
@@ -92,10 +93,12 @@ class FluxKontextMaxT2INode:
         output_images_list = []
         for image_url in image_urls:
             if not image_url:
-                print("WARN:", "No image URLs in the generated result in current request. Skipping...")
+                print(
+                    "WARN:", "No image URLs in the generated result in current request. Skipping...")
             output_images = imageurl2tensor(image_url)
             output_images_list.append(output_images)
-        print("INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
+        print(
+            "INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
         return (torch.cat(output_images_list, dim=0),)
 
 

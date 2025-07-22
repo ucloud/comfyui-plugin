@@ -4,6 +4,7 @@ from .modelverse_api.requests.flux_kontext_pro import FluxKontextPro, FluxKontex
 import torch
 import asyncio
 
+
 class FluxKontextProNode:
     """
     Flux Image Generator Node (Kontext Pro)
@@ -22,8 +23,8 @@ class FluxKontextProNode:
                 "client": ("MODELVERSE_API_CLIENT",),
                 "prompt": ("STRING", {"multiline": True, "default": "", "tooltip": "Text description of the image to generate"}),
                 "images": ("IMAGE,IMAGE_LIST", {
-                    "tooltip": "The image(s) to edit from. If not included, use text-to-image mode.", 
-                    "forceInput": False, 
+                    "tooltip": "The image(s) to edit from. If not included, use text-to-image mode.",
+                    "forceInput": False,
                     "default": None
                 }),
                 "num_requests": ("INT", {
@@ -74,7 +75,8 @@ class FluxKontextProNode:
         mode = "single"
         if isinstance(images, list):
             print("INFO:", "Running Flux Kontext Pro multi-image edit mode.")
-            print("INFO:", f"{len(images)} image included for the multi-image edit.")
+            print(
+                "INFO:", f"{len(images)} image included for the multi-image edit.")
             mode = "multi"
         else:
             print("INFO:", "Running Flux Kontext Pro single-image edit mode.")
@@ -83,19 +85,19 @@ class FluxKontextProNode:
 
         if mode == "multi":
             tasks = [client.async_send_request(FluxKontextProMulti(
-                    prompt=prompt,
-                    images=images,
-                    seed=seed+i,
-                    guidance_scale=guidance_scale
-                ))
+                prompt=prompt,
+                images=images,
+                seed=seed+i,
+                guidance_scale=guidance_scale
+            ))
                 for i in range(num_requests)]
         else:
             tasks = [client.async_send_request(FluxKontextPro(
-                    prompt=prompt,
-                    image=images,
-                    seed=seed+i,
-                    guidance_scale=guidance_scale
-                ))
+                prompt=prompt,
+                image=images,
+                seed=seed+i,
+                guidance_scale=guidance_scale
+            ))
                 for i in range(num_requests)]
 
         image_urls = asyncio.run(client.run_tasks(tasks))
@@ -103,10 +105,12 @@ class FluxKontextProNode:
         output_images_list = []
         for image_url in image_urls:
             if not image_url:
-                print("WARN:", "No image URLs in the generated result in current request. Skipping...")
+                print(
+                    "WARN:", "No image URLs in the generated result in current request. Skipping...")
             output_images = imageurl2tensor(image_url)
             output_images_list.append(output_images)
-        print("INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
+        print(
+            "INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
         return (torch.cat(output_images_list, dim=0),)
 
 
