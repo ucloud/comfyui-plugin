@@ -9,7 +9,7 @@ dependencies = ["requests", "pillow"]
 Repository = "https://github.com/ucloud/ucloud-comfyui"
 
 [tool.comfy]
-PublisherId = "ucloud-modelverse"
+PublisherId = "khalil-song"
 DisplayName = "ucloud-comfyui"
 Icon = ""
 includes = []
