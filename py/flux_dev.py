@@ -4,6 +4,7 @@ from .modelverse_api.requests.flux_dev import FluxDev
 import torch
 import asyncio
 
+
 class FluxDevNode:
     """
     Flux Image Generator Node (Dev)
@@ -83,8 +84,8 @@ class FluxDevNode:
             },
             "optional": {
                 "image": ("IMAGE", {
-                    "tooltip": "The image for reference.", 
-                    "forceInput": False, 
+                    "tooltip": "The image for reference.",
+                    "forceInput": False,
                     "default": None
                 })
             }
@@ -112,20 +113,20 @@ class FluxDevNode:
         if prompt is None or prompt == "":
             raise ValueError("Prompt is required")
         print("INFO:", "Running Flux Dev.")
-        
+
         client = ModelverseClient(client["api_key"])
 
         tasks = [client.async_send_request(FluxDev(
-                prompt=prompt,
-                image=image,
-                strength=strength,
-                guidance_scale=guidance_scale,
-                num_images=num_images,
-                num_inference_steps=num_inference_steps,
-                seed=seed+i,
-                width=width,
-                height=height,
-            ))
+            prompt=prompt,
+            image=image,
+            strength=strength,
+            guidance_scale=guidance_scale,
+            num_images=num_images,
+            num_inference_steps=num_inference_steps,
+            seed=seed+i,
+            width=width,
+            height=height,
+        ))
             for i in range(num_requests)]
 
         image_urls = asyncio.run(client.run_tasks(tasks))
@@ -133,11 +134,14 @@ class FluxDevNode:
         output_images_list = []
         for image_url in image_urls:
             if not image_url:
-                print("WARN:", "No image URLs in the generated result in current request. Skipping...")
+                print(
+                    "WARN:", "No image URLs in the generated result in current request. Skipping...")
             output_images = imageurl2tensor(image_url)
             output_images_list.append(output_images)
-        print("INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
-        return (torch.cat(output_images_list, dim=0),) 
+        print(
+            "INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
+        return (torch.cat(output_images_list, dim=0),)
+
 
 NODE_CLASS_MAPPINGS = {
     "Modelverse FluxDevNode": FluxDevNode

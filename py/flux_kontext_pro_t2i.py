@@ -4,6 +4,7 @@ from .modelverse_api.requests.flux_kontext_pro import FluxKontextProT2I
 import torch
 import asyncio
 
+
 class FluxKontextProT2INode:
     """
     Flux Image Generator Node (Kontext Pro) for text2image task.
@@ -20,7 +21,7 @@ class FluxKontextProT2INode:
                 "prompt": ("STRING", {"multiline": True, "default": "", "tooltip": "Text description of the image to generate"}),
                 "aspect_ratio": (["21:9", "16:9", "16:10", "4:3", "1:1", "3:4", "10:16", "9:16", "9:21"], {
                     "default": "1:1",
-                    "tooltip": "The aspect ratio of the output image, ranging from \"21:9\" to \"9:21\", default is \"1:1\""                
+                    "tooltip": "The aspect ratio of the output image, ranging from \"21:9\" to \"9:21\", default is \"1:1\""
                 }),
                 "num_images": ("INT", {
                     "default": 1,
@@ -79,12 +80,12 @@ class FluxKontextProT2INode:
         client = ModelverseClient(client["api_key"])
 
         tasks = [client.async_send_request(FluxKontextProT2I(
-                prompt=prompt,
-                aspect_ratio=aspect_ratio,
-                num_images=num_images,
-                seed=seed+i,
-                guidance_scale=guidance_scale
-            ))
+            prompt=prompt,
+            aspect_ratio=aspect_ratio,
+            num_images=num_images,
+            seed=seed+i,
+            guidance_scale=guidance_scale
+        ))
             for i in range(num_requests)]
 
         image_urls = asyncio.run(client.run_tasks(tasks))
@@ -92,10 +93,12 @@ class FluxKontextProT2INode:
         output_images_list = []
         for image_url in image_urls:
             if not image_url:
-                print("WARN:", "No image URLs in the generated result in current request. Skipping...")
+                print(
+                    "WARN:", "No image URLs in the generated result in current request. Skipping...")
             output_images = imageurl2tensor(image_url)
             output_images_list.append(output_images)
-        print("INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
+        print(
+            "INFO:", f"{len(output_images_list)}/{num_requests} request made successfully.")
         return (torch.cat(output_images_list, dim=0),)
 
 

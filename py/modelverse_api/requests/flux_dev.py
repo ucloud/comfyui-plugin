@@ -3,19 +3,29 @@ from pydantic import Field
 from ..utils import BaseRequest, image_to_base64
 from torch import Tensor
 
+
 class FluxDev(BaseRequest):
     """
     Flux-dev text to image model, 12 billion parameter rectified flow transformer
     """
-    guidance_scale: Optional[float] = Field(default=2.5, description="The CFG (Classifier Free Guidance) scale is a measure of how close you want the model to stick to your prompt when looking for a related image to show you.")
-    num_images: Optional[int] = Field(default=1, description="The number of images to generate.")
-    num_inference_steps: Optional[int] = Field(default=28, description="The number of inference steps to perform.")
-    prompt: str = Field(..., description="The prompt to generate an image from.")
-    image: Optional[Tensor] = Field(default=None, description="The image for reference.")
-    seed: Optional[int] = Field(default=-1, description="\n            The same seed and the same prompt given to the same version of the model\n            will output the same image every time.\n        ")
-    width: Optional[int] = Field(default=1024, description="The width of the generated image." , ge=256, le=1536)
-    height: Optional[int] = Field(default=1024, description="The height of the generated image." , ge=256, le=1536)
-    strength: Optional[float] = Field(default=0.8, description="Strength indicates extent to transform the reference image", ge=0, le=1)
+    guidance_scale: Optional[float] = Field(
+        default=2.5, description="The CFG (Classifier Free Guidance) scale is a measure of how close you want the model to stick to your prompt when looking for a related image to show you.")
+    num_images: Optional[int] = Field(
+        default=1, description="The number of images to generate.")
+    num_inference_steps: Optional[int] = Field(
+        default=28, description="The number of inference steps to perform.")
+    prompt: str = Field(...,
+                        description="The prompt to generate an image from.")
+    image: Optional[Tensor] = Field(
+        default=None, description="The image for reference.")
+    seed: Optional[int] = Field(
+        default=-1, description="\n            The same seed and the same prompt given to the same version of the model\n            will output the same image every time.\n        ")
+    width: Optional[int] = Field(
+        default=1024, description="The width of the generated image.", ge=256, le=1536)
+    height: Optional[int] = Field(
+        default=1024, description="The height of the generated image.", ge=256, le=1536)
+    strength: Optional[float] = Field(
+        default=0.8, description="Strength indicates extent to transform the reference image", ge=0, le=1)
 
     def __init__(
             self,
@@ -30,7 +40,7 @@ class FluxDev(BaseRequest):
             strength: Optional[float] = 0.8,
             **kwargs):
         super().__init__(**kwargs)
-        
+
         self.prompt = prompt
         self.guidance_scale = guidance_scale
         self.num_images = num_images
@@ -39,7 +49,8 @@ class FluxDev(BaseRequest):
         self.width = width
         self.height = height
         self.strength = strength
-        self.image = image_to_base64(image) if isinstance(image, Tensor) else None
+        self.image = image_to_base64(
+            image) if isinstance(image, Tensor) else None
 
     def build_payload(self) -> dict:
         """Builds the request payload dictionary."""
