@@ -6,10 +6,10 @@ license = {file = "LICENSE"}
 dependencies = ["requests", "pillow"]
 
 [project.urls]
-Repository = "https://github.com/ucloud/ucloud-comfyui"
+Repository = "https://github.com/ucloud/comfyui-plugin"
 
 [tool.comfy]
 PublisherId = "khalil-song"
-DisplayName = "ucloud-comfyui"
+DisplayName = "ComfyUl-UCloud"
 Icon = "https://www-s.ucloud.cn/2025/07/4a29a785049191245cea58d2176157d2_1753185180124.jpg"
 includes = []
