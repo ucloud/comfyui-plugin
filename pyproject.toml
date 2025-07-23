@@ -11,5 +11,5 @@ Repository = "https://github.com/ucloud/ucloud-comfyui"
 [tool.comfy]
 PublisherId = "khalil-song"
 DisplayName = "ucloud-comfyui"
-Icon = ""
+Icon = "https://www-s.ucloud.cn/2025/07/4a29a785049191245cea58d2176157d2_1753185180124.jpg"
 includes = []
