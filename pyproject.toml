@@ -1,7 +1,7 @@
 [project]
 name = "ucloud-comfyui"
 description = "This is a set of ComfyUI nodes for UCloud Moderlverse Image generation model API."
-version = "1.0.0"
+version = "1.0.1"
 license = {file = "LICENSE"}
 dependencies = ["requests", "pillow"]
 
