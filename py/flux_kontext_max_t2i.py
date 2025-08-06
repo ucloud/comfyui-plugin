@@ -63,7 +63,7 @@ class FluxKontextMaxT2INode:
     CATEGORY = "UCLOUD_MODELVERSE"
     FUNCTION = "execute"
 
-    def execute(self,
+    async def execute(self,
                 client,
                 prompt,
                 num_images=1,
@@ -88,7 +88,7 @@ class FluxKontextMaxT2INode:
         ))
             for i in range(num_requests)]
 
-        image_urls = asyncio.run(client.run_tasks(tasks))
+        image_urls = await client.run_tasks(tasks)
 
         output_images_list = []
         for image_url in image_urls:

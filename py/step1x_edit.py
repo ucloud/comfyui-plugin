@@ -60,7 +60,7 @@ class Step1xEditNode:
     CATEGORY = "UCLOUD_MODELVERSE"
     FUNCTION = "execute"
 
-    def execute(self,
+    async def execute(self,
                 client,
                 prompt,
                 image,
@@ -89,7 +89,7 @@ class Step1xEditNode:
         ))
             for i in range(num_requests)]
 
-        image_urls = asyncio.run(client.run_tasks(tasks))
+        image_urls = await client.run_tasks(tasks)
 
         output_images_list = []
         for image_url in image_urls:
