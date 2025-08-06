@@ -1,15 +1,15 @@
 [project]
 name = "ucloud-comfyui"
 description = "This is a set of ComfyUI nodes for UCloud Moderlverse Image generation model API."
-version = "1.0.0"
+version = "1.0.2"
 license = {file = "LICENSE"}
 dependencies = ["requests", "pillow"]
 
 [project.urls]
-Repository = "https://github.com/ucloud/ucloud-comfyui"
+Repository = "https://github.com/ucloud/comfyui-plugin"
 
 [tool.comfy]
-PublisherId = "ucloud-modelverse"
-DisplayName = "ucloud-comfyui"
-Icon = ""
+PublisherId = "khalil-song"
+DisplayName = "ComfyUl-UCloud"
+Icon = "https://www-s.ucloud.cn/2025/07/4a29a785049191245cea58d2176157d2_1753185180124.jpg"
 includes = []
