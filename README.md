@@ -15,7 +15,7 @@ This plugin provides seamless integration with UCloud's ModelVerse API, enabling
 
 2. **Configure API Key**
    
-   - Get your API key from [UCloud ModelVerse Console](https://console.ucloud.cn/uai/modelverse)
+   - Get your API key: [Console En](https://console.ucloud-global.com/modelverse/experience/api-keys), [Console Zh](https://console.ucloud.cn/modelverse/experience/api-keys)
    - Add your UCloud ModelVerse API key in the `Modelverse Client` node
    - Alternatively, create a `config.ini` file with `MODELVERSE_API_KEY=your_api_key`
 
