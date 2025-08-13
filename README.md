@@ -1,59 +1,65 @@
 # UCloud ModelVerse API for ComfyUI
 
-## Supported models
+This plugin provides seamless integration with UCloud's ModelVerse API, enabling you to use powerful AI models directly within ComfyUI for image generation and editing tasks.
 
-Now we do support following models:
+## Quick Start
 
-    - Flux Dev
-    - Flux Kontext Pro Text2Image
-    - Flux Kontext Pro 
-    - Flux Kontext Pro (Multi-inputs)
-    - Flux Kontext Max Text2Image
-    - Flux Kontext Max 
-    - Flux Kontext Max (Multi-inputs)
-    - Step1X-Edit
+### Installation
 
-You can find the corresponding nodes in our node set.
+1. **Install via Custom Node Manager** (Recommended)
+   - Open ComfyUI
+   - Go to **Manager** → **Custom Nodes Manager**
+   - Search for "ComfyUl-UCloud"
+   - Click **Install**
+   - Restart ComfyUI
 
-Note: (Multi-inputs) uses same node as normal (single input). Please check out the example workflow hidden in the images below.
+2. **Configure API Key**
+   
+   - Get your API key: [Console En](https://console.ucloud-global.com/modelverse/experience/api-keys), [Console Zh](https://console.ucloud.cn/modelverse/experience/api-keys)
+   - Add your UCloud ModelVerse API key in the `Modelverse Client` node
+   - Alternatively, create a `config.ini` file with `MODELVERSE_API_KEY=your_api_key`
 
-## Instruction
+### Basic Usage
 
-1. Install ComfyUI, please refer to [ComfyUI official github](https://github.com/comfyanonymous/ComfyUI). 
+1. Add a `Modelverse Client` node to your workflow
+2. Choose your desired model from the supported models below
+3. Connect the appropriate input/output nodes
+4. Run your workflow
 
-    Notice: this node plugin is only designed for ComfyUI version earlier than v0.3.44, please specify the release sersion when cloning. (e.g. `git clone -b v0.3.44 https://github.com/comfyanonymous/ComfyUI.git`)
+## Supported Models
 
-2. Change to `ComfyUI/custom_nodes` directory, and clone this repo, install required python packages.
+Our plugin supports the following models, each optimized for specific use cases:
 
-    ```
-    cd ～/ComfyUI/custom_nodes
-    git clone https://github.com/ucloud/ucloud-comfyui.git
-    cd ./ucloud-comfyui
-    pip install -r requirements.txt
-    ```
+- **Flux Dev** - Foundation model with strong stylization capabilities
+- **Flux Kontext Pro Text2Image** - Specialized for text-to-image generation
+- **Flux Kontext Pro** - Expert single image editing and enhancement
+- **Flux Kontext Pro (Multi-inputs)** - Batch processing for multiple images
+- **Flux Kontext Max Text2Image** - Premium text-to-image generation with highest quality
+- **Flux Kontext Max** - Flagship single image editing with advanced features
+- **Flux Kontext Max (Multi-inputs)** - Most powerful multi-image processing
+- **Step1X-Edit** - Precision local editing and inpainting
 
-3. Back to `ComfyUI` directory, start ComfyUI service, use web browser to open `localhost:8188`.
+Note: (Multi-inputs) models use the same node interface as their single-input counterparts. Check the example workflows below for implementation details.
 
-    ```
-    cd ～/ComfyUI
-    python main.py
-    ```
+## Example Workflows
 
-4. Build your own workflow with Modelverse nodes. You can check the following images, drag them into ComfyUI GUI and autoload example workflows. Don't forget to enter your `API_KEY` in the `Modelverse Client` node. If you wish to hide your `API_KEY` instead of showing it in GUI, alternatively you can write it in `config.ini` for `MODELVERSE_API_KEY` value.
+Build your own workflow with Modelverse nodes. You can check the following images, drag them into ComfyUI GUI and autoload example workflows.
 
-    | Flux Dev | Flux Kontext Pro | Flux Kontext Max (Multi-inputs) |
-    |:-:|:-:|:-:|
-    | <img src="assets/flux_dev.png"  width="200" height="200"> | <img src="assets/flux_kontext_pro_single.png"  width="200" height="200"> | <img src="assets/flux_kontext_max_multi.png"  width="200" height="200"> |
+| Flux Dev | Flux Kontext Pro | Flux Kontext Max (Multi-inputs) |
+|:-:|:-:|:-:|
+| <img src="assets/flux_dev.png"  width="200" height="200"> | <img src="assets/flux_kontext_pro_single.png"  width="200" height="200"> | <img src="assets/flux_kontext_max_multi.png"  width="200" height="200"> |
 
-    In case the above images does not work for you, check the screenshot below:
+In case the above images does not work for you, check the screenshot below:
 
-    Text-to-Image with Flux Dev
-    ![Text-to-Image](assets/screenshot-flux_dev.png)
+Text-to-Image with Flux Dev
+![Text-to-Image](assets/screenshot-flux_dev.png)
 
-    Single image editting with Flux Kontext Pro
-    ![single-input](assets/screenshot-flux_kontext_pro.png)
+Single image editting with Flux Kontext Pro
+![single-input](assets/screenshot-flux_kontext_pro.png)
 
-    Multi image editting with Flux Kontext Max
-    ![Multi-inputs](assets/screenshot-flux_kontext_max.png)
+Multi image editting with Flux Kontext Max
+![Multi-inputs](assets/screenshot-flux_kontext_max.png)
+
+
 
     
