@@ -1,7 +1,7 @@
 [project]
 name = "ucloud-comfyui"
-description = "This is a set of ComfyUI nodes for UCloud Moderlverse Image generation model API."
-version = "1.0.2"
+description = "Run local and API LLMs with features including Gemini 2.0 image generation, DeepSeek R1, QwenVL 2.5, QWQ 32B, Ollama, LlamaCPP, LM Studio, KoboldCPP, TextGen, and Transformers. Connect via APIs to Anthropic, Groq, OpenAI, Google Gemini, Mistral, and xAI. Create your own character assistants with custom system prompts, presets, and much more."
+version = "1.0.3"
 license = {file = "LICENSE"}
 dependencies = ["requests", "pillow"]
 
