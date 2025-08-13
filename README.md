@@ -43,21 +43,23 @@ Note: (Multi-inputs) models use the same node interface as their single-input co
 
 ## Example Workflows
 
-Drag the following images into ComfyUI to automatically load example workflows:
+Build your own workflow with Modelverse nodes. You can check the following images, drag them into ComfyUI GUI and autoload example workflows.
 
-    | Flux Dev | Flux Kontext Pro | Flux Kontext Max (Multi-inputs) |
-    |:-:|:-:|:-:|
-    | <img src="assets/flux_dev.png"  width="200" height="200"> | <img src="assets/flux_kontext_pro_single.png"  width="200" height="200"> | <img src="assets/flux_kontext_max_multi.png"  width="200" height="200"> |
+| Flux Dev | Flux Kontext Pro | Flux Kontext Max (Multi-inputs) |
+|:-:|:-:|:-:|
+| <img src="assets/flux_dev.png"  width="200" height="200"> | <img src="assets/flux_kontext_pro_single.png"  width="200" height="200"> | <img src="assets/flux_kontext_max_multi.png"  width="200" height="200"> |
 
-    In case the above images does not work for you, check the screenshot below:
+In case the above images does not work for you, check the screenshot below:
 
-    Text-to-Image with Flux Dev
-    ![Text-to-Image](assets/screenshot-flux_dev.png)
+Text-to-Image with Flux Dev
+![Text-to-Image](assets/screenshot-flux_dev.png)
 
-    Single image editting with Flux Kontext Pro
-    ![single-input](assets/screenshot-flux_kontext_pro.png)
+Single image editting with Flux Kontext Pro
+![single-input](assets/screenshot-flux_kontext_pro.png)
 
-    Multi image editting with Flux Kontext Max
-    ![Multi-inputs](assets/screenshot-flux_kontext_max.png)
+Multi image editting with Flux Kontext Max
+![Multi-inputs](assets/screenshot-flux_kontext_max.png)
+
+
 
     
