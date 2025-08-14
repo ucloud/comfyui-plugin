@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - compshare-comfyui
     paths:
       - "pyproject.toml"
 
