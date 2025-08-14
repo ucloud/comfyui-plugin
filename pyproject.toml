@@ -1,7 +1,7 @@
 [project]
 name = "ucloud-comfyui"
-description = "Run local and API LLMs with features including Gemini 2.0 image generation, DeepSeek R1, QwenVL 2.5, QWQ 32B, Ollama, LlamaCPP, LM Studio, KoboldCPP, TextGen, and Transformers. Connect via APIs to Anthropic, Groq, OpenAI, Google Gemini, Mistral, and xAI. Create your own character assistants with custom system prompts, presets, and much more."
-version = "1.0.3"
+description = "This is a custom node for ComfyUI that allows you to use the UCloud API directly in ComfyUI. UCloud is a high-performance AI computing platform providing powerful image generation models and industry-leading inference speeds. It offers a wide range of AI model options, including popular text-to-image and image editing models, ready to use without local GPU setup."
+version = "1.0.4"
 license = {file = "LICENSE"}
 dependencies = ["requests", "pillow"]
 
