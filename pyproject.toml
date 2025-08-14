@@ -1,7 +1,7 @@
 [project]
-name = "ucloud-comfyui"
-description = "This is a custom node for ComfyUI that allows you to use the UCloud API directly in ComfyUI. UCloud is a high-performance AI computing platform providing powerful image generation models and industry-leading inference speeds. It offers a wide range of AI model options, including popular text-to-image and image editing models, ready to use without local GPU setup."
-version = "1.0.4"
+name = "comfyui-compshare"
+description = "ComfyUI全能AI节点，无缝运行本地/API模型（含DeepSeek、Qwen等），直连compshare享极速图像视频生成体验，轻松创建角色助手，详情请下载使用。"
+version = "1.0.0"
 license = {file = "LICENSE"}
 dependencies = ["requests", "pillow"]
 
@@ -10,6 +10,6 @@ Repository = "https://github.com/ucloud/comfyui-plugin"
 
 [tool.comfy]
 PublisherId = "khalil-song"
-DisplayName = "ComfyUl-UCloud"
-Icon = "https://www-s.ucloud.cn/2025/07/4a29a785049191245cea58d2176157d2_1753185180124.jpg"
+DisplayName = "comfyui-compshare"
+Icon = "https://www-s.ucloud.cn/2025/08/98b99f23726c8d35c71c5447ccf4e4bb_1755161511623.png"
 includes = []
