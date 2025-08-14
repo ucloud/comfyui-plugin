@@ -6,7 +6,7 @@ license = {file = "LICENSE"}
 dependencies = ["requests", "pillow"]
 
 [project.urls]
-Repository = "https://github.com/ucloud/comfyui-plugin"
+Repository = "https://github.com/ucloud/plugin-comfyui"
 
 [tool.comfy]
 PublisherId = "khalil-song"
