@@ -1,7 +1,10 @@
 [project]
 name = "comfyui-compshare"
-description = "ComfyUI全能AI节点，无缝运行本地/API模型（含DeepSeek、Qwen等），直连compshare享极速图像视频生成体验，轻松创建角色助手，详情请下载使用。"
-version = "1.0.0"
+description = """
+This is a custom node for ComfyUI that allows you to use the Compshare API directly in ComfyUI. Compshare is a high-performance AI inference platform providing powerful image generation models including popular text-to-image and image editing models without local GPU setup. [Website](https://www.compshare.cn?ytag=comfyplug_yy)
+优云智算的ComfyUI的自定义节点，可直接在ComfyUI中使用优云智算的生图API。优云智算是一个高性能的AI推理平台，提供强大的图像生成模型（文生图、图生图、图像编辑）和行业领先的推理速度，无需本地GPU设置即可使用。[官网](https://www.compshare.cn?ytag=comfyplug_yy)
+"""
+version = "1.0.1"
 license = {file = "LICENSE"}
 dependencies = ["requests", "pillow"]
 
