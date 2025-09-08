@@ -2,11 +2,57 @@ import time
 import requests
 import os
 import tempfile
+import io
+import cv2
+import numpy as np
+import torch
+from PIL import Image
 from .modelverse_api.client import ModelverseClient
 
 class Modelverse_WanAIT2V:
     def __init__(self):
         pass
+    
+    def _video_to_frames(self, video_data):
+        """Convert video data to frame tensors for ComfyUI"""
+        # Save video data to temporary file for processing
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+        temp_file.write(video_data)
+        temp_file.close()
+        
+        try:
+            # Use OpenCV to read video frames
+            cap = cv2.VideoCapture(temp_file.name)
+            frames = []
+            
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                
+                # Convert BGR to RGB
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                # Convert to PIL Image
+                pil_image = Image.fromarray(frame_rgb)
+                # Convert to numpy array and normalize to [0, 1]
+                frame_array = np.array(pil_image).astype(np.float32) / 255.0
+                frames.append(frame_array)
+            
+            cap.release()
+            
+            if not frames:
+                raise Exception("No frames could be extracted from the video")
+            
+            # Convert to tensor format (batch, height, width, channels)
+            frames_tensor = torch.from_numpy(np.stack(frames, axis=0))
+            return frames_tensor
+            
+        finally:
+            # Clean up temporary file
+            try:
+                os.unlink(temp_file.name)
+            except:
+                pass
 
     @classmethod
     def INPUT_TYPES(s):
@@ -21,8 +67,8 @@ class Modelverse_WanAIT2V:
             }
         }
 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("video_path",)
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("video_frames",)
     FUNCTION = "generate_video"
     CATEGORY = "UCLOUD_MODELVERSE"
 
@@ -70,16 +116,14 @@ class Modelverse_WanAIT2V:
             else:
                 raise Exception(f"Unknown task status: {task_status}")
         
-        # 3. Download video and save to temporary file
+        # 3. Download video and convert to frames
         response = requests.get(video_url)
         response.raise_for_status()
         
-        # Create temporary file with .mp4 extension
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-        temp_file.write(response.content)
-        temp_file.close()
+        # Convert video data to frame tensors
+        frames_tensor = self._video_to_frames(response.content)
         
-        return (temp_file.name,)
+        return (frames_tensor,)
 
 
 NODE_CLASS_MAPPINGS = {
