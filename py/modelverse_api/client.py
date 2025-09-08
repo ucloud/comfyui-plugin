@@ -4,47 +4,35 @@ import asyncio
 from .utils import BaseRequest
 
 
+import asyncio
+from .utils import BaseRequest
+
 class ModelverseClient:
-    """
-    UCloud Modelverse API Client
-
-    This class handles the core communication with the Modelverse API.
-    """
-
     BASE_URL = "https://api.modelverse.cn"
-    API_PATH = "/v1/images/generations"
 
     def __init__(self, api_key):
-        """
-        Initialize Modelverse API client
-
-        Args:
-            api_key (str): Modelverse API key
-        """
         self.api_key = api_key
+        self.headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
 
-        self.headers = {"Authorization": f"Bearer {api_key}",
-                        "Content-Type": "application/json"}
+    def post(self, endpoint, payload, timeout=180):
+        url = f"{self.BASE_URL}{endpoint}"
+        response = requests.post(url, headers=self.headers, json=payload, timeout=timeout)
+        return self._handle_response(response)
 
-    def post(self, payload, timeout=180):
-        """
-        Send POST request to Modelverse API
+    def get(self, endpoint, params=None, timeout=180):
+        url = f"{self.BASE_URL}{endpoint}"
+        headers = {"Authorization": f"Bearer {self.api_key}"}
+        response = requests.get(url, headers=headers, params=params, timeout=timeout)
+        return self._handle_response(response)
 
-        Args:
-            endpoint (str): API endpoint
-            payload (dict): Request payload
-            timeout (float, optional): Request timeout in seconds
-
-        Returns:
-            dict: API response
-        """
-        url = f"{self.BASE_URL}{self.API_PATH}"
-        response = requests.post(
-            url, headers=self.headers, json=payload, timeout=timeout)
-
+    def _handle_response(self, response):
         if response.status_code == 401:
             raise Exception("Unauthorized: Invalid API key")
-
+        
+        # For backward compatibility with older error formats
         if response.status_code != 200:
             error_message = f"Error: {response.status_code}"
             try:
@@ -60,26 +48,33 @@ class ModelverseClient:
             if response_data['code'] == 401:
                 raise Exception("Unauthorized: Invalid API key")
             if response_data['code'] != 200:
-                raise Exception(
-                    f"API Error: {response_data.get('message', 'Unknown error')}")
+                raise Exception(f"API Error: {response_data.get('message', 'Unknown error')}")
             return response_data.get('data', {})
         return response_data
 
+    # --- New Methods for T2V ---
+    def submit_task(self, model, task_input, parameters):
+        endpoint = "/v1/tasks/submit"
+        payload = {
+            "model": model,
+            "input": task_input,
+            "parameters": parameters
+        }
+        return self.post(endpoint, payload)
+
+    def get_task_status(self, task_id):
+        endpoint = f"/v1/tasks/status"
+        params = {"task_id": task_id}
+        return self.get(endpoint, params=params)
+        
+    # --- Restored Async Methods for existing nodes ---
     async def async_send_request(self, request: BaseRequest):
-        """
-        Sends an API request using a request object.
-
-        Args:
-            request (BaseRequest): The request object containing payload and endpoint logic.
-
-        Returns:
-            dict: API response or task result.
-        """
         payload = request.build_payload()
+        endpoint = request.API_PATH
         if "seed" in payload:
             payload["seed"] = payload["seed"] % 2147483647 if payload["seed"] != -1 else -1
 
-        response = self.post(payload)
+        response = self.post(endpoint, payload)
         return response.get("data", [])
 
     async def run_tasks(self, tasks):
