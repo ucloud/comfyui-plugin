@@ -1,7 +1,15 @@
 import os
 import shutil
-import folder_paths
 from datetime import datetime
+
+try:
+    import folder_paths
+except ImportError:
+    # fallback for when not running in ComfyUI environment
+    class folder_paths:
+        @staticmethod
+        def get_output_directory():
+            return os.path.join(os.getcwd(), "output")
 
 class SaveVideo:
     def __init__(self):
