@@ -7,12 +7,22 @@ from .modelverse_api.client import ModelverseClient
 
 # Import VideoFromFile class for ComfyUI video handling
 try:
-    from comfy.model_management import VideoFromFile
+    # Try the newer import path first
+    from comfy_extras.nodes_video import VideoFromFile
 except ImportError:
-    # Fallback implementation if VideoFromFile is not available
-    class VideoFromFile:
-        def __init__(self, video_io):
-            self.video_io = video_io
+    try:
+        # Fallback to older import path
+        from comfy.model_management import VideoFromFile
+    except ImportError:
+        # Final fallback - create a simple wrapper
+        class VideoFromFile:
+            def __init__(self, video_io):
+                self.video_io = video_io
+                self.video_data = video_io.getvalue() if hasattr(video_io, 'getvalue') else video_io
+            
+            def get_dimensions(self):
+                # Return default dimensions if we can't determine them
+                return (1280, 720)  # width, height
 
 class Modelverse_WanAIT2V:
     def __init__(self):
@@ -91,12 +101,24 @@ class Modelverse_WanAIT2V:
             raise Exception("No video data was returned")
         
         print("Video generation completed successfully")
+        print(f"Downloaded video data size: {len(video_data)} bytes")
         
         # Convert video data to BytesIO object
         video_io = io.BytesIO(video_data)
         
+        # Ensure the BytesIO object is at the beginning
+        video_io.seek(0)
+        
         # Return VideoFromFile object
-        return (VideoFromFile(video_io),)
+        try:
+            video_obj = VideoFromFile(video_io)
+            print("VideoFromFile object created successfully")
+            return (video_obj,)
+        except Exception as e:
+            print(f"Error creating VideoFromFile object: {e}")
+            # If VideoFromFile fails, try returning the raw video data
+            # This is a fallback that might work with some ComfyUI versions
+            return (video_data,)
 
 
 NODE_CLASS_MAPPINGS = {
