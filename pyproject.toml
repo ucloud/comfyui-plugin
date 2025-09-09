@@ -1,7 +1,7 @@
 [project]
 name = "ucloud-comfyui"
 description = "This is a custom node for ComfyUI that allows you to use the UCloud API directly in ComfyUI. UCloud is a high-performance AI computing platform providing powerful image generation models and industry-leading inference speeds. It offers a wide range of AI model options, including popular text-to-image and image editing models, ready to use without local GPU setup."
-version = "1.0.4"
+version = "1.0.5"
 license = {file = "LICENSE"}
 dependencies = ["requests", "pillow"]
 
