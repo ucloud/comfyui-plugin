@@ -3,3 +3,5 @@ __pycache__
 py/__pycache__
 py/modelverse_api/__pycache__
 py/modelverse_api/requests/__pycache__
+/venv
+.idea/
