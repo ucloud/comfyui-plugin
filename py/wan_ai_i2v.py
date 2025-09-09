@@ -34,11 +34,11 @@ class Modelverse_WanAII2V:
         return {
             "required": {
                 "client": ("MODELVERSE_API_CLIENT",),
-                "first_frame_image": ("IMAGE",),
                 "prompt": ("STRING", {"multiline": True, "default": "Convert to video","tooltip": "Text prompt to guide video generation"}),
             },
             "optional": {
-                "first_frame_url": ("STRING", {"default": "", "tooltip": "Alternative: provide image URL instead of IMAGE input (leave empty to use IMAGE input)"}),
+                "first_frame_image": ("IMAGE",),
+                "first_frame_url": ("STRING", {"default": "", "tooltip": "First frame image URL (use either this OR first_frame_image, not both)"}),
                 "last_frame_image": ("IMAGE",),
                 "last_frame_url": ("STRING", {"default": "", "tooltip": "Optional: URL for the last frame of the video"}),
                 "negative_prompt": ("STRING", {"multiline": True, "default": "low quality, blurry","tooltip": "Negative prompt to avoid unwanted content"}),
@@ -52,7 +52,7 @@ class Modelverse_WanAII2V:
     FUNCTION = "generate_video"
     CATEGORY = "UCLOUD_MODELVERSE"
 
-    def generate_video(self, client, first_frame_image, prompt, first_frame_url="", last_frame_image=None, last_frame_url="", negative_prompt="", resolution="720P", seed=0):
+    def generate_video(self, client, prompt, first_frame_image=None, first_frame_url="", last_frame_image=None, last_frame_url="", negative_prompt="", resolution="720P", seed=0):
         api_key = client.get("api_key")
         if not api_key:
             raise ValueError("API key is not set in the client")
@@ -62,13 +62,20 @@ class Modelverse_WanAII2V:
         # Prepare the input data
         task_input = {"prompt": prompt}
         
-        # Handle first frame - prioritize URL if provided, otherwise use IMAGE
-        if first_frame_url and first_frame_url.strip():
+        # Validate first frame input - must provide either image or URL, but not both
+        has_url = first_frame_url and first_frame_url.strip()
+        has_image = first_frame_image is not None
+        
+        if has_url and has_image:
+            raise ValueError("Please provide either first_frame_image OR first_frame_url, not both")
+        elif not has_url and not has_image:
+            raise ValueError("Must provide either first_frame_image or first_frame_url")
+        
+        # Handle first frame
+        if has_url:
             task_input["first_frame_url"] = first_frame_url.strip()
             print(f"Using first frame URL: {first_frame_url}")
         else:
-            if first_frame_image is None:
-                raise ValueError("Either first_frame_image or first_frame_url must be provided")
             # Convert IMAGE tensor to base64
             first_frame_base64 = image_to_base64(first_frame_image)
             if not first_frame_base64:
@@ -109,6 +116,11 @@ class Modelverse_WanAII2V:
 
         print(f"Task submitted successfully with ID: {task_id}")
 
+        # 2. Poll for the result
+        video_url = ""
+        max_retries = 120  # Maximum 10 minutes (120 * 5 seconds)
+        retry_count = 0
+        
         while True:
             try:
                 status_res = mv_client.get_task_status(task_id)
