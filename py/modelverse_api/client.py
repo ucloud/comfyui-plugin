@@ -22,6 +22,14 @@ class ModelverseClient:
         response = requests.post(url, headers=self.headers, json=payload, timeout=timeout)
         return self._handle_response(response)
 
+    def post_multipart(self, endpoint, data=None, files=None, timeout=180):
+        """POST with multipart/form-data. Content-Type is set by requests automatically."""
+        url = f"{self.BASE_URL}{endpoint}"
+        # Do not set Content-Type explicitly when using files; requests will handle it.
+        headers = {k: v for k, v in self.headers.items() if k.lower() != "content-type"}
+        response = requests.post(url, headers=headers, data=data, files=files, timeout=timeout)
+        return self._handle_response(response)
+
     def get(self, endpoint, params=None, timeout=180):
         url = f"{self.BASE_URL}{endpoint}"
         headers = {"Authorization": f"Bearer {self.api_key}"}
@@ -69,12 +77,16 @@ class ModelverseClient:
         
     # --- Restored Async Methods for existing nodes ---
     async def async_send_request(self, request: BaseRequest):
-        payload = request.build_payload()
         endpoint = request.API_PATH
-        if "seed" in payload:
-            payload["seed"] = payload["seed"] % 2147483647 if payload["seed"] != -1 else -1
-
-        response = self.post(endpoint, payload)
+        # Support multipart form requests when available
+        if hasattr(request, "build_multipart") and callable(getattr(request, "build_multipart")):
+            data, files = request.build_multipart()
+            response = self.post_multipart(endpoint, data=data, files=files)
+        else:
+            payload = request.build_payload()
+            if isinstance(payload, dict) and "seed" in payload:
+                payload["seed"] = payload["seed"] % 2147483647 if payload["seed"] != -1 else -1
+            response = self.post(endpoint, payload)
         return response.get("data", [])
 
     async def run_tasks(self, tasks):
