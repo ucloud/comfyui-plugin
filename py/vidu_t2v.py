@@ -14,10 +14,28 @@ except ImportError:
     try:
         from comfy.model_management import VideoFromFile
     except ImportError:
+        import av
+        
         class VideoFromFile:
             def __init__(self, video_io):
                 self.video_io = video_io
                 self.video_data = video_io.getvalue() if hasattr(video_io, 'getvalue') else video_io
+                self._width = None
+                self._height = None
+            
+            def get_dimensions(self):
+                if self._width is None:
+                    self.video_io.seek(0)
+                    try:
+                        container = av.open(self.video_io)
+                        stream = container.streams.video[0]
+                        self._width = stream.width
+                        self._height = stream.height
+                        container.close()
+                    except:
+                        self._width, self._height = 1280, 720
+                    self.video_io.seek(0)
+                return (self._width, self._height)
 
 
 ASPECT_RATIOS = ["16:9", "9:16", "3:4", "4:3", "1:1"]
