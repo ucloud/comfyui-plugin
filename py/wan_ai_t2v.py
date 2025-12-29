@@ -4,10 +4,22 @@ import io
 from .modelverse_api.client import ModelverseClient
 from comfy.comfy_types.node_typing import IO
 try:
+    # Try the newer import path first
     from comfy_extras.nodes_video import VideoFromFile
 except ImportError:
     try:
+        # Fallback to older import path
         from comfy.model_management import VideoFromFile
+    except ImportError:
+        # Final fallback - create a simple wrapper
+        class VideoFromFile:
+            def __init__(self, video_io):
+                self.video_io = video_io
+                self.video_data = video_io.getvalue() if hasattr(video_io, 'getvalue') else video_io
+            
+            def get_dimensions(self):
+                # Return default dimensions if we can't determine them
+                return (1280, 720)  # width, height
 
 class Modelverse_WanAIT2V:
     def __init__(self):
