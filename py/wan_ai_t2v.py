@@ -3,36 +3,11 @@ import requests
 import io
 from .modelverse_api.client import ModelverseClient
 from comfy.comfy_types.node_typing import IO
-
-# Import VideoFromFile class for ComfyUI video handling
 try:
     from comfy_extras.nodes_video import VideoFromFile
 except ImportError:
     try:
         from comfy.model_management import VideoFromFile
-    except ImportError:
-        import av
-        
-        class VideoFromFile:
-            def __init__(self, video_io):
-                self.video_io = video_io
-                self.video_data = video_io.getvalue() if hasattr(video_io, 'getvalue') else video_io
-                self._width = None
-                self._height = None
-            
-            def get_dimensions(self):
-                if self._width is None:
-                    self.video_io.seek(0)
-                    try:
-                        container = av.open(self.video_io)
-                        stream = container.streams.video[0]
-                        self._width = stream.width
-                        self._height = stream.height
-                        container.close()
-                    except:
-                        self._width, self._height = 1280, 720
-                    self.video_io.seek(0)
-                return (self._width, self._height)
 
 class Modelverse_WanAIT2V:
     def __init__(self):
