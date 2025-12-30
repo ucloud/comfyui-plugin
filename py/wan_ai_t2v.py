@@ -1,25 +1,7 @@
 import time
-import requests
-import io
 from .modelverse_api.client import ModelverseClient
 from comfy.comfy_types.node_typing import IO
-try:
-    # Try the newer import path first
-    from comfy_extras.nodes_video import VideoFromFile
-except ImportError:
-    try:
-        # Fallback to older import path
-        from comfy.model_management import VideoFromFile
-    except ImportError:
-        # Final fallback - create a simple wrapper
-        class VideoFromFile:
-            def __init__(self, video_io):
-                self.video_io = video_io
-                self.video_data = video_io.getvalue() if hasattr(video_io, 'getvalue') else video_io
-            
-            def get_dimensions(self):
-                # Return default dimensions if we can't determine them
-                return (1280, 720)  # width, height
+
 
 class Modelverse_WanAIT2V:
     def __init__(self):
@@ -38,8 +20,8 @@ class Modelverse_WanAIT2V:
             }
         }
 
-    RETURN_TYPES = (IO.VIDEO,)
-    RETURN_NAMES = ("video",)
+    RETURN_TYPES = (IO.STRING, IO.STRING)
+    RETURN_NAMES = ("url", "task_id")
     FUNCTION = "generate_video"
     CATEGORY = "UCLOUD_MODELVERSE"
 
@@ -86,13 +68,8 @@ class Modelverse_WanAIT2V:
                 time.sleep(5)  # Wait for 5 seconds before polling again
             else:
                 raise Exception(f"Unknown task status: {task_status}")
-        
-        # 3. Download video
-        response = requests.get(video_url, timeout=120)
-        response.raise_for_status()
-        video_io = io.BytesIO(response.content)
-        video_io.seek(0)
-        return (VideoFromFile(video_io),)
+
+        return (video_url, task_id)
 
 
 NODE_CLASS_MAPPINGS = {

@@ -4,28 +4,10 @@ Model: viduq2
 支持1-7张参考图片，生成具备主体一致的视频
 """
 import time
-import requests
-import io
 from .modelverse_api.client import ModelverseClient
 from .modelverse_api.utils import image_to_base64
 from comfy.comfy_types.node_typing import IO
-try:
-    # Try the newer import path first
-    from comfy_extras.nodes_video import VideoFromFile
-except ImportError:
-    try:
-        # Fallback to older import path
-        from comfy.model_management import VideoFromFile
-    except ImportError:
-        # Final fallback - create a simple wrapper
-        class VideoFromFile:
-            def __init__(self, video_io):
-                self.video_io = video_io
-                self.video_data = video_io.getvalue() if hasattr(video_io, 'getvalue') else video_io
-            
-            def get_dimensions(self):
-                # Return default dimensions if we can't determine them
-                return (1280, 720)  # width, height
+
 
 ASPECT_RATIOS = ["16:9", "9:16", "3:4", "4:3", "1:1"]
 RESOLUTIONS = ["540p", "720p", "1080p"]
@@ -62,8 +44,8 @@ class ViduReference2VideoNode:
             }
         }
 
-    RETURN_TYPES = (IO.VIDEO,)
-    RETURN_NAMES = ("video",)
+    RETURN_TYPES = (IO.STRING, IO.STRING)
+    RETURN_NAMES = ("url", "task_id")
     FUNCTION = "generate"
     CATEGORY = "UCLOUD_MODELVERSE/Vidu"
 
@@ -121,8 +103,7 @@ class ViduReference2VideoNode:
         # Poll for result
         video_url = self._poll_task(mv_client, task_id)
 
-        # Download and return video
-        return self._download_video(video_url)
+        return (video_url, task_id)
 
     def _poll_task(self, mv_client, task_id, max_retries=180):
         for i in range(max_retries):
@@ -144,13 +125,6 @@ class ViduReference2VideoNode:
                 raise Exception(f"Unknown status: {task_status}")
 
         raise Exception("Task timed out")
-
-    def _download_video(self, video_url):
-        response = requests.get(video_url, timeout=120)
-        response.raise_for_status()
-        video_io = io.BytesIO(response.content)
-        video_io.seek(0)
-        return (VideoFromFile(video_io),)
 
 
 NODE_CLASS_MAPPINGS = {
