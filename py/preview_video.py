@@ -1,5 +1,6 @@
 import os
 import re
+import requests
 import folder_paths
 from comfy.comfy_types.node_typing import IO
 from comfy_api_nodes.util import download_url_to_video_output
@@ -27,10 +28,7 @@ class ModelversePreviewVideo:
         if type(video_url) == list:
             video_url = video_url[0]
 
-        # Download video and get VIDEO output
-        video = await download_url_to_video_output(video_url)
-
-        # Save to file if requested
+        # Save to file if requested (do this first before download_url_to_video_output consumes the data)
         if save_output:
             output_dir = folder_paths.get_output_directory()
             (
@@ -54,19 +52,13 @@ class ModelversePreviewVideo:
             file = f"{filename}_{counter:05}.mp4"
             file_path = os.path.join(full_output_folder, file)
 
-            # Get video data from the video object and save
-            if hasattr(video, 'video_io'):
-                video_data = video.video_io.getvalue()
-            elif hasattr(video, 'get_bytes'):
-                video_data = video.get_bytes()
-            else:
-                # Try to read from the BytesIO
-                video.video_io.seek(0)
-                video_data = video.video_io.read()
-                video.video_io.seek(0)
-
+            response = requests.get(video_url, timeout=120)
+            response.raise_for_status()
             with open(file_path, "wb") as f:
-                f.write(video_data)
+                f.write(response.content)
+
+        # Download video and get VIDEO output
+        video = await download_url_to_video_output(video_url)
 
         return {"ui": {"video_url": [video_url]}, "result": (video,)}
 
