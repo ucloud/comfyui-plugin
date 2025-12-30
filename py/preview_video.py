@@ -2,7 +2,6 @@ import os
 import re
 import folder_paths
 from comfy.comfy_types.node_typing import IO
-from comfy_api_nodes.apis.client import ApiEndpoint, HttpMethod, SynchronousOperation
 from comfy_api_nodes.util import download_url_to_video_output
 
 
