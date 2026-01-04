@@ -1,20 +1,7 @@
 import time
-import requests
-import os
-import tempfile
-import io
 from .modelverse_api.client import ModelverseClient
 from comfy.comfy_types.node_typing import IO
-# Import VideoFromFile class for ComfyUI video handling
-try:
-    # Try the newer import path first
-    from comfy_extras.nodes_video import VideoFromFile
-except ImportError:
-    try:
-        # Fallback to older import path
-        from comfy.model_management import VideoFromFile
-    except:
-        raise ImportError("VideoFromFile not found")
+
 
 class Modelverse_WanAIT2V:
     def __init__(self):
@@ -33,8 +20,8 @@ class Modelverse_WanAIT2V:
             }
         }
 
-    RETURN_TYPES = (IO.VIDEO,)
-    RETURN_NAMES = ("video",)
+    RETURN_TYPES = (IO.STRING, IO.STRING)
+    RETURN_NAMES = ("url", "task_id")
     FUNCTION = "generate_video"
     CATEGORY = "UCLOUD_MODELVERSE"
 
@@ -81,36 +68,8 @@ class Modelverse_WanAIT2V:
                 time.sleep(5)  # Wait for 5 seconds before polling again
             else:
                 raise Exception(f"Unknown task status: {task_status}")
-        
-        # 3. Download video
-        response = requests.get(video_url)
-        response.raise_for_status()
-        
-        # Extract video data
-        video_data = response.content
-        
-        if not video_data:
-            raise Exception("No video data was returned")
-        
-        print("Video generation completed successfully")
-        print(f"Downloaded video data size: {len(video_data)} bytes")
-        
-        # Convert video data to BytesIO object
-        video_io = io.BytesIO(video_data)
-        
-        # Ensure the BytesIO object is at the beginning
-        video_io.seek(0)
-        
-        # Return VideoFromFile object
-        try:
-            video_obj = VideoFromFile(video_io)
-            print("VideoFromFile object created successfully")
-            return (video_obj,)
-        except Exception as e:
-            print(f"Error creating VideoFromFile object: {e}")
-            # If VideoFromFile fails, try returning the raw video data
-            # This is a fallback that might work with some ComfyUI versions
-            return (video_data,)
+
+        return (video_url, task_id)
 
 
 NODE_CLASS_MAPPINGS = {
