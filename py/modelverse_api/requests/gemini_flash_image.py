@@ -34,19 +34,22 @@ def _tensor_to_base64(image: Tensor, mime_type: str = "image/png") -> Dict[str, 
 
 class GeminiFlashImageRequest(BaseRequest):
     """
-    Request builder for Gemini 2.5 Flash Image generateContent endpoint.
+    Request builder for Gemini Flash Image generateContent endpoint.
     Supports text-to-image and image-edit (text+image to image).
     """
 
-    API_PATH = "/v1beta/models/gemini-2.5-flash-image:generateContent"
+    API_PATH_TEMPLATE = "/v1beta/models/{model}:generateContent"
 
     prompt: str = Field(..., description="Text prompt")
+    model: str = Field(default="gemini-3.1-flash-image", description="Gemini Flash Image model")
     image: Optional[Tensor] = Field(default=None, description="Optional input image for edit")
     mime_type: str = Field(default="image/png", description="MIME type for inline image data")
 
-    def __init__(self, prompt: str, image: Optional[Tensor] = None, mime_type: str = "image/png", **kwargs):
+    def __init__(self, prompt: str, model: str = "gemini-3.1-flash-image", image: Optional[Tensor] = None, mime_type: str = "image/png", **kwargs):
         super().__init__(**kwargs)
         self.prompt = prompt
+        self.model = model
+        self.API_PATH = self.API_PATH_TEMPLATE.format(model=model)
         self.image = image
         self.mime_type = mime_type
 
@@ -77,5 +80,4 @@ class GeminiFlashImageRequest(BaseRequest):
         return ["prompt"]
 
     def field_order(self):
-        return ["prompt", "image", "mime_type"]
-
+        return ["model", "prompt", "image", "mime_type"]

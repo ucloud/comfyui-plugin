@@ -34,7 +34,7 @@ class QwenImageEditNode:
     RETURN_TYPES = (IO.IMAGE,)
     RETURN_NAMES = ("image",)
 
-    CATEGORY = "UCLOUD_MODELVERSE"
+    CATEGORY = "UCLOUD_MODELVERSE/Qwen-Image"
     FUNCTION = "execute"
 
     async def execute(

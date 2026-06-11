@@ -1,5 +1,9 @@
 import os
+import json
 import configparser
+import torch
+import server
+from aiohttp import web
 from comfy.comfy_types.node_typing import IO
 
 try:
@@ -19,6 +23,61 @@ except Exception as e:
     config = None
 
 
+secrets_path = os.path.join(parent_dir, 'secrets.json')
+
+
+def load_secrets():
+    if not os.path.exists(secrets_path):
+        with open(secrets_path, 'w') as secrets_file:
+            json.dump({}, secrets_file, indent=2)
+    with open(secrets_path) as secrets_file:
+        return json.load(secrets_file)
+
+
+def save_secrets(secrets):
+    with open(secrets_path, 'w') as secrets_file:
+        json.dump(secrets, secrets_file, indent=2)
+
+
+async def get_modelverse_secrets(_request):
+    return web.json_response(load_secrets())
+
+
+async def set_modelverse_secret(request):
+    try:
+        data = await request.json()
+    except Exception:
+        return web.json_response({"error": "Invalid or empty request body"}, status=400)
+
+    key = data.get("key", "").strip()
+    value = data.get("value", "")
+    if not key:
+        return web.json_response({"error": "Key cannot be empty"}, status=400)
+
+    secrets = load_secrets()
+    secrets[key] = value
+    save_secrets(secrets)
+    return web.json_response({"ok": True})
+
+
+async def delete_modelverse_secret(request):
+    key = request.match_info["key"]
+    secrets = load_secrets()
+    if key not in secrets:
+        return web.json_response({"error": "Key not found"}, status=404)
+
+    del secrets[key]
+    save_secrets(secrets)
+    return web.json_response({"ok": True})
+
+
+if not getattr(server.PromptServer.instance, "_modelverse_secrets_registered", False):
+    server.PromptServer.instance.routes.get("/modelverse-secrets")(get_modelverse_secrets)
+    server.PromptServer.instance.routes.post("/modelverse-secrets")(set_modelverse_secret)
+    server.PromptServer.instance.routes.delete("/modelverse-secrets/{key}")(delete_modelverse_secret)
+    server.PromptServer.instance._modelverse_secrets_registered = True
+
+
 class ModelverseAPIClient:
     """
     Ucloud Modelverse API Client Node
@@ -33,7 +92,11 @@ class ModelverseAPIClient:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "api_key": ("STRING", {"multiline": False, "default": ""})
+                "api_key": ("STRING", {
+                    "multiline": False,
+                    "default": "",
+                    "tooltip": "ModelVerse API key. Leave empty to read MODELVERSE_API_KEY from config.ini and avoid storing the key in workflow files."
+                })
             },
         }
 
@@ -72,18 +135,64 @@ class ModelverseAPIClient:
         },)
 
 
+class ModelverseSecretClient:
+    """
+    UCloud Modelverse API Client from a locally managed secret.
+
+    This node stores only the secret name in the workflow. The actual API key is
+    read from secrets.json at execution time.
+    """
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "secret": ("STRING", {
+                    "multiline": False,
+                    "default": "",
+                    "tooltip": "Secret name from Modelverse Secrets Manager. The workflow stores this name, not the API key."
+                })
+            },
+        }
+
+    RETURN_TYPES = ("MODELVERSE_API_CLIENT",)
+    RETURN_NAMES = ("client",)
+
+    FUNCTION = "create_client"
+
+    CATEGORY = "UCLOUD_MODELVERSE"
+
+    @classmethod
+    def IS_CHANGED(cls, secret):
+        return load_secrets().get(secret, "")
+
+    def create_client(self, secret):
+        secret = secret.strip() if isinstance(secret, str) else secret
+        if not secret:
+            raise ValueError("Secret name is required")
+
+        secrets = load_secrets()
+        api_key = secrets.get(secret)
+        if not api_key:
+            raise ValueError(f"Secret '{secret}' not found in secrets.json")
+
+        return ({
+            "api_key": api_key
+        },)
+
+
 class ModelverseImagePacker:
     """
     Ucloud Modelverse Image Packer
 
-    This node packs multiple images into a list for multi-image editing.
+    This node packs multiple images into a batched IMAGE tensor for multi-image editing.
 
     Args:
-        images1: The first image/image_list to be packed together with.
-        images2: The second image/image_list to be packed together with. et cetera.
+        images1: The first image to be packed together with.
+        images2: The second image to be packed together with, et cetera.
 
     Returns:
-        image_list: the pack of all input images.
+        images: batched IMAGE tensor for Flux Kontext Pro/Max multi-image mode.
     """
 
     @classmethod
@@ -100,8 +209,8 @@ class ModelverseImagePacker:
             }
         }
 
-    RETURN_TYPES = ("IMAGE_LIST",)
-    RETURN_NAMES = ("image_list",)
+    RETURN_TYPES = (IO.IMAGE,)
+    RETURN_NAMES = ("images",)
 
     FUNCTION = "pack_images"
 
@@ -122,14 +231,18 @@ class ModelverseImagePacker:
         for i in (images1, images2, images3, images4, images5):
             if i is not None:
                 result.extend(to_list(i))
-        return (result,)
+        if not result:
+            raise ValueError("At least one image is required")
+        return (torch.cat(result, dim=0),)
 
 
 NODE_CLASS_MAPPINGS = {
     'UCloud ModelVerse Client': ModelverseAPIClient,
+    'UCloud ModelVerse Secret Client': ModelverseSecretClient,
     'ModelVerse Image Packer': ModelverseImagePacker
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     'UCloud ModelVerse Client': 'Modelverse Client',
+    'UCloud ModelVerse Secret Client': 'Modelverse Secret Client',
     'ModelVerse Image Packer': 'Modelverse Image Packer'
 }

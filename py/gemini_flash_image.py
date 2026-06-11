@@ -8,6 +8,9 @@ from .modelverse_api.requests.gemini_flash_image import GeminiFlashImageRequest
 from .modelverse_api.utils import decode_image, images2tensor
 
 
+MODELS = ["gemini-3.1-flash-image", "gemini-2.5-flash-image"]
+
+
 def _extract_images_from_gemini_response(resp: Dict[str, Any]) -> List[torch.Tensor]:
     """Parse Gemini API response and return list of tensors for any inline images."""
     images = []
@@ -36,9 +39,9 @@ def _extract_images_from_gemini_response(resp: Dict[str, Any]) -> List[torch.Ten
 
 class GeminiFlashImageNode:
     """
-    Gemini 2.5 Flash Image (text-to-image and image-edit) via Modelverse API.
+    Gemini Flash Image (text-to-image and image-edit) via Modelverse API.
 
-    Endpoint: /v1beta/models/gemini-2.5-flash-image:generateContent
+    Endpoint: /v1beta/models/{model}:generateContent
     """
 
     @classmethod
@@ -46,6 +49,7 @@ class GeminiFlashImageNode:
         return {
             "required": {
                 "client": ("MODELVERSE_API_CLIENT",),
+                "model": (MODELS, {"default": "gemini-3.1-flash-image", "tooltip": "Gemini Flash Image model"}),
                 "prompt": (IO.STRING, {"multiline": True, "default": "Create a picture of a nano banana dish in a fancy restaurant with a Gemini theme"}),
                 "mime_type": (["image/png", "image/jpeg"], {"default": "image/png"}),
                 "num_requests": (IO.INT, {"default": 1, "min": 1, "max": 10, "step": 1, "display": "number"}),
@@ -57,11 +61,12 @@ class GeminiFlashImageNode:
 
     RETURN_TYPES = (IO.IMAGE,)
     RETURN_NAMES = ("image",)
-    CATEGORY = "UCLOUD_MODELVERSE"
+    CATEGORY = "UCLOUD_MODELVERSE/Gemini"
     FUNCTION = "execute"
 
     async def execute(self,
                       client,
+                      model: str,
                       prompt: str,
                       mime_type: str = "image/png",
                       num_requests: int = 1,
@@ -73,7 +78,7 @@ class GeminiFlashImageNode:
 
         outputs: List[torch.Tensor] = []
         for i in range(num_requests):
-            req = GeminiFlashImageRequest(prompt=prompt, image=image, mime_type=mime_type)
+            req = GeminiFlashImageRequest(prompt=prompt, model=model, image=image, mime_type=mime_type)
             payload = req.build_payload()
             resp = mv_client.post(req.API_PATH, payload)
 
@@ -101,5 +106,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "NanoBanana": "Modelverse Gemini 2.5 Flash Image",
+    "NanoBanana": "Modelverse Gemini Flash Image",
 }

@@ -59,7 +59,7 @@ class FluxKontextMaxT2INode:
     RETURN_TYPES = ("IMAGE", )
     RETURN_NAMES = ("image",)
 
-    CATEGORY = "UCLOUD_MODELVERSE"
+    CATEGORY = "UCLOUD_MODELVERSE/Flux"
     FUNCTION = "execute"
 
     async def execute(self,

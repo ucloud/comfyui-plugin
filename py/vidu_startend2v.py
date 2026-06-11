@@ -1,6 +1,6 @@
 """
 Vidu StartEnd2Video - 首尾帧生视频模型
-Models: viduq2-pro, viduq2-turbo
+Models: viduq3-pro, viduq3-turbo, viduq2-pro-fast, viduq2-pro, viduq2-turbo
 """
 import time
 from .modelverse_api.client import ModelverseClient
@@ -8,7 +8,7 @@ from .modelverse_api.utils import image_to_base64
 from comfy.comfy_types.node_typing import IO
 
 
-MODELS = ["viduq2-pro", "viduq2-turbo"]
+MODELS = ["viduq3-pro", "viduq3-turbo", "viduq2-pro-fast", "viduq2-pro", "viduq2-turbo"]
 RESOLUTIONS = ["540p", "720p", "1080p"]
 MOVEMENT_AMPLITUDES = ["auto", "small", "medium", "large"]
 
@@ -16,7 +16,7 @@ MOVEMENT_AMPLITUDES = ["auto", "small", "medium", "large"]
 class ViduStartEnd2VideoNode:
     """
     Vidu StartEnd2Video - 首尾帧生视频
-    Models: viduq2-pro (效果好，细节丰富), viduq2-turbo (效果好，生成快)
+    Models: viduq3-pro/viduq3-turbo (1-16s), viduq2-pro-fast/viduq2-pro/viduq2-turbo (1-8s)
     注意：首尾帧分辨率需相近 (0.8~1.25)
     """
 
@@ -25,8 +25,8 @@ class ViduStartEnd2VideoNode:
         return {
             "required": {
                 "client": ("MODELVERSE_API_CLIENT",),
-                "model": (MODELS, {"default": "viduq2-pro", "tooltip": "viduq2-pro: 效果好细节丰富, viduq2-turbo: 生成快"}),
-                "duration": (IO.INT, {"default": 5, "min": 1, "max": 8, "step": 1, "tooltip": "视频时长(秒), 1-8"}),
+                "model": (MODELS, {"default": "viduq3-pro", "tooltip": "viduq3-pro/turbo: 支持1-16秒; viduq2-pro-fast/pro/turbo: 支持1-8秒"}),
+                "duration": (IO.INT, {"default": 5, "min": 1, "max": 16, "step": 1, "tooltip": "视频时长(秒)，viduq3系列支持1-16秒，viduq2系列支持1-8秒"}),
                 "resolution": (RESOLUTIONS, {"default": "720p", "tooltip": "分辨率"}),
                 "movement_amplitude": (MOVEMENT_AMPLITUDES, {"default": "auto", "tooltip": "运动幅度"}),
             },
@@ -71,6 +71,8 @@ class ViduStartEnd2VideoNode:
             raise ValueError("尾帧：请提供 image 或 url，不能同时提供")
         if not has_last_url and not has_last_image:
             raise ValueError("必须提供尾帧图片")
+        if duration > 8 and not model.startswith("viduq3-"):
+            raise ValueError("只有 viduq3 系列模型支持超过8秒的视频时长")
 
         task_input = {}
 

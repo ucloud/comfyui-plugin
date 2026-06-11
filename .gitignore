@@ -7,3 +7,4 @@ py/modelverse_api/requests/__pycache__
 .idea/
 .ace-tool/
 docs
+secrets.json

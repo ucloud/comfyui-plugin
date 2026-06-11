@@ -22,8 +22,8 @@ class FluxKontextMaxNode:
             "required": {
                 "client": ("MODELVERSE_API_CLIENT",),
                 "prompt": (IO.STRING, {"multiline": True, "default": "", "tooltip": "Text description of the image to generate"}),
-                "images": ("IMAGE_LIST", {
-                    "tooltip": "The image(s) to edit from. If not included, use text-to-image mode.",
+                "images": (IO.IMAGE, {
+                    "tooltip": "Image(s) to edit. Connect a single IMAGE, or use Modelverse Image Packer for multiple images.",
                     "forceInput": False,
                     "default": None
                 }),
@@ -74,9 +74,16 @@ class FluxKontextMaxNode:
 
         mode = "single"
         if isinstance(images, list):
+            if len(images) > 1:
+                print("INFO:", "Running Flux Kontext Max multi-image edit mode.")
+                print("INFO:", f"{len(images)} image included for the multi-image edit.")
+                mode = "multi"
+            else:
+                images = images[0]
+        elif isinstance(images, torch.Tensor) and images.ndim == 4 and images.shape[0] > 1:
+            images = [images[i:i + 1] for i in range(images.shape[0])]
             print("INFO:", "Running Flux Kontext Max multi-image edit mode.")
-            print(
-                "INFO:", f"{len(images)} image included for the multi-image edit.")
+            print("INFO:", f"{len(images)} image included for the multi-image edit.")
             mode = "multi"
         else:
             print("INFO:", "Running Flux Kontext Max single-image edit mode.")
