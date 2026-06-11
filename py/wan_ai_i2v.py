@@ -29,7 +29,7 @@ class Modelverse_WanAII2V:
     RETURN_TYPES = (IO.STRING, IO.STRING)
     RETURN_NAMES = ("url", "task_id")
     FUNCTION = "generate_video"
-    CATEGORY = "UCLOUD_MODELVERSE"
+    CATEGORY = "UCLOUD_MODELVERSE/Wan"
 
     def generate_video(self, client, prompt, first_frame_image=None, first_frame_url="", last_frame_image=None, last_frame_url="", negative_prompt="", resolution="720P", seed=0):
         api_key = client.get("api_key")

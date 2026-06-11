@@ -1,5 +1,5 @@
 """
-Gemini 3 Pro Image Preview (Nano Banana Pro) ComfyUI Node.
+Gemini 3 Pro Image (Nano Banana Pro) ComfyUI Node.
 Professional asset production with advanced features:
 - High-resolution output (1K, 2K, 4K)
 - Aspect ratio control
@@ -45,7 +45,7 @@ IMAGE_SIZES = ["1K", "2K", "4K"]
 
 class GeminiProImageNode:
     """
-    Gemini 3 Pro Image Preview (Nano Banana Pro) via Modelverse API.
+    Gemini 3 Pro Image (Nano Banana Pro) via Modelverse API.
     
     Professional asset production with:
     - High-resolution output (1K, 2K, 4K)
@@ -53,7 +53,7 @@ class GeminiProImageNode:
     - Google Search grounding for real-time info
     - Up to 14 reference images
     
-    Endpoint: /v1beta/models/gemini-3-pro-image-preview:generateContent
+    Endpoint: /v1beta/models/gemini-3-pro-image:generateContent
     """
 
     @classmethod
@@ -79,7 +79,7 @@ class GeminiProImageNode:
 
     RETURN_TYPES = (IO.IMAGE,)
     RETURN_NAMES = ("image",)
-    CATEGORY = "UCLOUD_MODELVERSE"
+    CATEGORY = "UCLOUD_MODELVERSE/Gemini"
     FUNCTION = "execute"
 
     async def execute(
@@ -135,7 +135,7 @@ class GeminiProImageNode:
             outputs.append(tensors[0])
 
         if not outputs:
-            raise Exception("No images generated from Gemini 3 Pro Image Preview")
+            raise Exception("No images generated from Gemini 3 Pro Image")
 
         return (torch.cat(outputs, dim=0),)
 
@@ -145,5 +145,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    'Gemini Pro Image (Nano Banana Pro)': 'Gemini 3 Pro Image Preview',
+    'Gemini Pro Image (Nano Banana Pro)': 'Gemini 3 Pro Image',
 }

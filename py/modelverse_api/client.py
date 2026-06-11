@@ -70,6 +70,9 @@ class ModelverseClient:
         }
         return self.post(endpoint, payload)
 
+    def submit_task_request(self, request: BaseRequest):
+        return self.post(request.API_PATH, request.build_payload())
+
     def get_task_status(self, task_id):
         endpoint = f"/v1/tasks/status"
         params = {"task_id": task_id}

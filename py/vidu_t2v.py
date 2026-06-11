@@ -1,12 +1,13 @@
 """
 Vidu Text2Video - 文生视频模型
-Model: viduq2
+Models: viduq3-pro, viduq3-turbo, viduq2
 """
 import time
 from .modelverse_api.client import ModelverseClient
 from comfy.comfy_types.node_typing import IO
 
 
+MODELS = ["viduq3-pro", "viduq3-turbo", "viduq2"]
 ASPECT_RATIOS = ["16:9", "9:16", "3:4", "4:3", "1:1"]
 RESOLUTIONS = ["540p", "720p", "1080p"]
 
@@ -14,7 +15,7 @@ RESOLUTIONS = ["540p", "720p", "1080p"]
 class ViduText2VideoNode:
     """
     Vidu Text2Video - 文生视频
-    Model: viduq2
+    Models: viduq3-pro, viduq3-turbo, viduq2
     """
 
     @classmethod
@@ -22,6 +23,7 @@ class ViduText2VideoNode:
         return {
             "required": {
                 "client": ("MODELVERSE_API_CLIENT",),
+                "model": (MODELS, {"default": "viduq3-pro", "tooltip": "viduq3-pro: 效果好细节丰富, viduq3-turbo: 生成快, viduq2: 旧版模型"}),
                 "prompt": (IO.STRING, {"multiline": True, "default": "A beautiful sunset over the ocean", "tooltip": "文本提示词，最长2000字符"}),
                 "duration": (IO.INT, {"default": 5, "min": 1, "max": 10, "step": 1, "tooltip": "视频时长(秒)"}),
                 "aspect_ratio": (ASPECT_RATIOS, {"default": "16:9", "tooltip": "长宽比"}),
@@ -39,7 +41,7 @@ class ViduText2VideoNode:
     FUNCTION = "generate"
     CATEGORY = "UCLOUD_MODELVERSE/Vidu"
 
-    def generate(self, client, prompt, duration, aspect_ratio, resolution, seed=0, guidance_scale=7.5, bgm=False):
+    def generate(self, client, model, prompt, duration, aspect_ratio, resolution, seed=0, guidance_scale=7.5, bgm=False):
         api_key = client.get("api_key")
         if not api_key:
             raise ValueError("API key is not set")
@@ -58,7 +60,7 @@ class ViduText2VideoNode:
         }
 
         # Submit task
-        submit_res = mv_client.submit_task("viduq2", task_input, parameters)
+        submit_res = mv_client.submit_task(model, task_input, parameters)
         task_id = submit_res.get("output", {}).get("task_id")
         if not task_id:
             raise Exception(f"Failed to submit task: {submit_res}")

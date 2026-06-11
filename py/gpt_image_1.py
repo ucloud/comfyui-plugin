@@ -32,7 +32,7 @@ class GPTImage1Node:
 
     RETURN_TYPES = (IO.IMAGE,)
     RETURN_NAMES = ("image",)
-    CATEGORY = "UCLOUD_MODELVERSE"
+    CATEGORY = "UCLOUD_MODELVERSE/Gpt-img"
     FUNCTION = "execute"
 
     async def execute(

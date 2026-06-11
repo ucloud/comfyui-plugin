@@ -15,13 +15,13 @@ This plugin provides seamless integration with UCloud's ModelVerse API, enabling
 
 2. **Configure API Key**
    
-   - Get your API key: [Console En](https://console.ucloud-global.com/modelverse/experience/api-keys), [Console Zh](https://console.ucloud.cn/modelverse/experience/api-keys)
-   - Add your UCloud ModelVerse API key in the `Modelverse Client` node
-   - Alternatively, create a `config.ini` file with `MODELVERSE_API_KEY=your_api_key`
+   - Get your API key: [Console En](https://astraflow.ucloud.cn/modelverse/api-keys), [Console Zh](https://astraflow.ucloud.cn/modelverse/api-keys)
+   - Add your UCloud ModelVerse API key in the `Modelverse Secret Client` node
+   - Or Alternatively, create a `config.ini` file with `MODELVERSE_API_KEY=your_api_key`
 
 ### Basic Usage
 
-1. Add a `Modelverse Client` node to your workflow
+1. Add a `Modelverse Secret Client` node to your workflow
 2. Choose your desired model from the supported models below
 3. Connect the appropriate input/output nodes
 4. Run your workflow
@@ -29,6 +29,8 @@ This plugin provides seamless integration with UCloud's ModelVerse API, enabling
 ## Supported Models
 
 Our plugin supports the following models, each optimized for specific use cases:
+
+### Image Generation
 
 - **Flux Dev** - Foundation model with strong stylization capabilities
 - **Flux Kontext Pro Text2Image** - Specialized for text-to-image generation
@@ -38,6 +40,20 @@ Our plugin supports the following models, each optimized for specific use cases:
 - **Flux Kontext Max** - Flagship single image editing with advanced features
 - **Flux Kontext Max (Multi-inputs)** - Most powerful multi-image processing
 - **Step1X-Edit** - Precision local editing and inpainting
+- **GPT Image 1** - OpenAI's text-to-image generation
+- **Gemini 3 Pro Image** - Google's professional asset production with search grounding
+- **Qwen Image** - Alibaba's text-to-image generation
+
+### Video Generation
+
+- **Kling V3** - Unified text/image-to-video and motion control
+- **Kling V3 Omni** - Multimodal video generation with reference inputs
+- **Doubao Seedance 2.0** - Text/image-to-video with audio generation
+- **OpenAI Sora 2** - High-quality text-to-video generation
+- **HappyHorse 1.0** - Text-to-video generation
+- **Veo 3.1** - Google's video generation (text-to-video, image-to-video)
+- **Vidu** - Multiple models for text/image-to-video (viduq3-pro, viduq3-turbo, viduq2)
+- **Wan-AI** - Text/image-to-video generation
 
 Note: (Multi-inputs) models use the same node interface as their single-input counterparts. Check the example workflows below for implementation details.
 

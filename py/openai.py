@@ -14,18 +14,20 @@ import folder_paths
 
 # Hardcoded models list
 DEFAULT_MODELS = [
-    'ByteDance/doubao-1.5-thinking-vision-pro',
     'ByteDance/doubao-seed-1.6',
-    'ByteDance/doubao-seed-1.6-thinking',
     'Qwen/QwQ-32B',
     'Qwen/Qwen-Image',
     'Qwen/Qwen-Image-Edit',
-    'Qwen/Qwen3-235B-A22B',
-    'Qwen/Qwen3-30B-A3B',
     'Qwen/Qwen3-32B',
     'Qwen/Qwen3-Coder',
-    'Wan-AI/Wan2.2-I2V',
-    'Wan-AI/Wan2.2-T2V',
+    'doubao-seedance-2-0-260128',
+    'kling-v3',
+    'kling-v3-omni',
+    'happyhorse-1.0-t2v',
+    'happyhorse-1.0-i2v',
+    'happyhorse-1.0-r2v',
+    'veo-3.1-generate-001',
+    'veo-3.1-fast-generate-001',
     'baidu/ernie-4.5-turbo-128k',
     'baidu/ernie-4.5-turbo-vl-32k',
     'baidu/ernie-x1-turbo-32k',
@@ -36,33 +38,34 @@ DEFAULT_MODELS = [
     'black-forest-labs/flux-kontext-pro/multi',
     'black-forest-labs/flux-kontext-pro/text-to-image',
     'black-forest-labs/flux.1-dev',
-    'claude-4-opus',
     'claude-4-sonnet',
-    'deepseek-ai/DeepSeek-Prover-V2-671B',
     'deepseek-ai/DeepSeek-R1',
     'deepseek-ai/DeepSeek-R1-0528',
-    'deepseek-ai/DeepSeek-R1-Distill-Llama-70B',
     'deepseek-ai/DeepSeek-V3-0324',
     'deepseek-ai/DeepSeek-V3.1',
     'gemini-2.5-flash',
     'gemini-2.5-flash-image',
     'gemini-2.5-pro',
+    'gemini-3.1-flash-image',
+    'gemini-3-pro-image',
     'gpt-4.1-mini',
     'grok-4',
     'moonshotai/Kimi-K2-Instruct',
     'openai/gpt-4.1',
     'openai/gpt-5',
     'openai/gpt-5-mini',
-    'openai/gpt-oss-120b',
-    'openai/gpt-oss-20b',
-    'qwen/qwen2.5-vl-72b-instruct',
-    'zai-org/glm-4.5',
-    'zai-org/glm-4.5v',
+    'viduq2',
+    'viduq2-pro',
+    'viduq2-turbo',
+    'viduq2-pro-fast',
+    'viduq3-pro',
+    'viduq3-turbo',
+    'zai-org/glm-5',
     'stepfun-ai/step1x-edit'
 ]
 
 # Default selected model
-DEFAULT_MODEL = "zai-org/glm-4.5"
+DEFAULT_MODEL = "zai-org/glm-5"
 
 
 class ModelverseChat:

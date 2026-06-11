@@ -1,5 +1,5 @@
 """
-Gemini 3 Pro Image Preview (Nano Banana Pro) request builder.
+Gemini 3 Pro Image (Nano Banana Pro) request builder.
 Supports text-to-image and image editing with advanced features like
 aspect ratio, resolution control, and Google Search grounding.
 """
@@ -40,12 +40,12 @@ def _tensor_to_base64(image: Tensor, mime_type: str = "image/png") -> Dict[str, 
 
 class GeminiProImageRequest(BaseRequest):
     """
-    Request builder for Gemini 3 Pro Image Preview (Nano Banana Pro) generateContent endpoint.
+    Request builder for Gemini 3 Pro Image (Nano Banana Pro) generateContent endpoint.
     Supports text-to-image, image editing, and advanced features like aspect ratio,
     resolution control (1K/2K/4K), and Google Search grounding.
     """
 
-    API_PATH = "/v1beta/models/gemini-3-pro-image-preview:generateContent"
+    API_PATH = "/v1beta/models/gemini-3-pro-image:generateContent"
 
     prompt: str = Field(..., description="Text prompt")
     images: Optional[List[Tensor]] = Field(default=None, description="Optional input images (up to 14)")
