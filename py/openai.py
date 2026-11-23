@@ -16,8 +16,6 @@ import folder_paths
 DEFAULT_MODELS = [
     'ByteDance/doubao-seed-1.6',
     'Qwen/QwQ-32B',
-    'Qwen/Qwen-Image',
-    'Qwen/Qwen-Image-Edit',
     'Qwen/Qwen3-32B',
     'Qwen/Qwen3-Coder',
     'doubao-seedance-2-0-260128',
@@ -31,13 +29,9 @@ DEFAULT_MODELS = [
     'baidu/ernie-4.5-turbo-128k',
     'baidu/ernie-4.5-turbo-vl-32k',
     'baidu/ernie-x1-turbo-32k',
-    'black-forest-labs/flux-kontext-max',
-    'black-forest-labs/flux-kontext-max/multi',
-    'black-forest-labs/flux-kontext-max/text-to-image',
     'black-forest-labs/flux-kontext-pro',
     'black-forest-labs/flux-kontext-pro/multi',
     'black-forest-labs/flux-kontext-pro/text-to-image',
-    'black-forest-labs/flux.1-dev',
     'claude-4-sonnet',
     'deepseek-ai/DeepSeek-R1',
     'deepseek-ai/DeepSeek-R1-0528',
@@ -59,7 +53,6 @@ DEFAULT_MODELS = [
     'viduq2-turbo',
     'viduq2-pro-fast',
     'viduq3-pro',
-    'viduq3-turbo',
     'zai-org/glm-5',
     'stepfun-ai/step1x-edit'
 ]
