@@ -9,8 +9,10 @@ if (!document.querySelector(`link[href="${cssUrl}"]`)) {
 const NODE_NAME = "UCloud ModelVerse Secret Client";
 const WIDGET_NAME = "secret";
 const ENDPOINT = "/modelverse-secrets";
+const TOKEN_HEADER = "X-Modelverse-Secret-Token";
 
 let cachedSecretNames = [];
+let secretToken = null;
 
 function el(tag, props = {}, ...children) {
     const node = Object.assign(document.createElement(tag), props);
@@ -21,6 +23,22 @@ function el(tag, props = {}, ...children) {
 async function fetchSecrets() {
     const response = await api.fetchApi(ENDPOINT, { method: "GET" });
     return await response.json();
+}
+
+async function getSecretToken() {
+    if (secretToken) {
+        return secretToken;
+    }
+    const response = await api.fetchApi(`${ENDPOINT}/token`, { method: "GET" });
+    if (!response.ok) {
+        throw new Error("Unable to obtain the ModelVerse secrets token");
+    }
+    secretToken = (await response.json()).token;
+    return secretToken;
+}
+
+async function authHeaders(extra = {}) {
+    return { ...extra, [TOKEN_HEADER]: await getSecretToken() };
 }
 
 async function refreshSecretNamesCache() {
@@ -57,8 +75,15 @@ async function refreshSecretDropdowns(preferredValue) {
 
 function buildSecretRow(name = "", value = "", isNew = false, onSaved) {
     let originalName = name;
+    let initialValue = value;
     const nameInput = el("input", { className: "mv-secret-input", placeholder: "Secret name", value: name });
-    const valueInput = el("input", { className: "mv-secret-input", placeholder: "API key", value, type: "password", autocomplete: "off" });
+    const valueInput = el("input", {
+        className: "mv-secret-input",
+        placeholder: isNew ? "API key" : "Leave empty to keep the stored key",
+        value,
+        type: "text",
+        autocomplete: "off",
+    });
 
     const saveButton = el("button", { className: "mv-secret-button mv-secret-save", textContent: isNew ? "Add" : "Save" });
     const deleteButton = el("button", { className: "mv-secret-button mv-secret-delete", textContent: "Delete" });
@@ -71,19 +96,29 @@ function buildSecretRow(name = "", value = "", isNew = false, onSaved) {
             return;
         }
 
+        // The input shows a server-side mask for stored secrets; only a value the
+        // user actually typed should be sent back.
+        const typedValue = valueInput.value.trim();
+        const submittedValue = !isNew && (typedValue === "" || typedValue === initialValue) ? "" : typedValue;
+        if (isNew && !submittedValue) {
+            valueInput.focus();
+            return;
+        }
+
         const response = await api.fetchApi(ENDPOINT, {
             method: "POST",
-            body: JSON.stringify({ key, value: valueInput.value }),
+            headers: await authHeaders({ "Content-Type": "application/json" }),
+            body: JSON.stringify({ key, value: submittedValue, old_key: originalName }),
         });
         if (!response.ok) {
             return;
         }
 
-        if (!isNew && originalName && originalName !== key) {
-            await api.fetchApi(`${ENDPOINT}/${encodeURIComponent(originalName)}`, { method: "DELETE" });
-        }
-
         originalName = key;
+        const latest = await fetchSecrets();
+        initialValue = latest[key] ?? "";
+        valueInput.value = initialValue;
+        valueInput.placeholder = "Leave empty to keep the stored key";
         await refreshSecretDropdowns(key);
 
         if (typeof onSaved === "function") {
@@ -91,7 +126,7 @@ function buildSecretRow(name = "", value = "", isNew = false, onSaved) {
         }
 
         if (isNew) {
-            row.replaceWith(buildSecretRow(key, valueInput.value, false, onSaved));
+            row.replaceWith(buildSecretRow(key, initialValue, false, onSaved));
             return;
         }
 
@@ -106,7 +141,10 @@ function buildSecretRow(name = "", value = "", isNew = false, onSaved) {
             row.remove();
             return;
         }
-        const response = await api.fetchApi(`${ENDPOINT}/${encodeURIComponent(originalName)}`, { method: "DELETE" });
+        const response = await api.fetchApi(`${ENDPOINT}/${encodeURIComponent(originalName)}`, {
+            method: "DELETE",
+            headers: await authHeaders(),
+        });
         if (response.ok) {
             row.remove();
             await refreshSecretDropdowns();
@@ -131,7 +169,7 @@ function createSecretsModal(secrets) {
     const rows = el(
         "div",
         { className: "mv-secret-rows" },
-        ...Object.entries(secrets).map(([name, value]) => buildSecretRow(name, value, false, showSaveNotice)),
+        ...Object.entries(secrets).map(([name, masked]) => buildSecretRow(name, masked, false, showSaveNotice)),
     );
     const addButton = el("button", {
         className: "mv-secret-add",

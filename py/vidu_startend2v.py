@@ -1,6 +1,6 @@
 """
 Vidu StartEnd2Video - 首尾帧生视频模型
-Models: viduq3-pro, viduq3-turbo, viduq2-pro-fast, viduq2-pro, viduq2-turbo
+Models: viduq3-pro, viduq2-pro-fast, viduq2-pro, viduq2-turbo
 """
 import time
 from .modelverse_api.client import ModelverseClient
@@ -8,7 +8,7 @@ from .modelverse_api.utils import image_to_base64
 from comfy.comfy_types.node_typing import IO
 
 
-MODELS = ["viduq3-pro", "viduq3-turbo", "viduq2-pro-fast", "viduq2-pro", "viduq2-turbo"]
+MODELS = ["viduq3-pro", "viduq2-pro-fast", "viduq2-pro", "viduq2-turbo"]
 RESOLUTIONS = ["540p", "720p", "1080p"]
 MOVEMENT_AMPLITUDES = ["auto", "small", "medium", "large"]
 
@@ -16,7 +16,7 @@ MOVEMENT_AMPLITUDES = ["auto", "small", "medium", "large"]
 class ViduStartEnd2VideoNode:
     """
     Vidu StartEnd2Video - 首尾帧生视频
-    Models: viduq3-pro/viduq3-turbo (1-16s), viduq2-pro-fast/viduq2-pro/viduq2-turbo (1-8s)
+    Models: viduq3-pro (1-16s), viduq2-pro-fast/viduq2-pro/viduq2-turbo (1-8s)
     注意：首尾帧分辨率需相近 (0.8~1.25)
     """
 
@@ -25,7 +25,7 @@ class ViduStartEnd2VideoNode:
         return {
             "required": {
                 "client": ("MODELVERSE_API_CLIENT",),
-                "model": (MODELS, {"default": "viduq3-pro", "tooltip": "viduq3-pro/turbo: 支持1-16秒; viduq2-pro-fast/pro/turbo: 支持1-8秒"}),
+                "model": (MODELS, {"default": "viduq3-pro", "tooltip": "viduq3-pro: 支持1-16秒; viduq2-pro-fast/pro/turbo: 支持1-8秒"}),
                 "duration": (IO.INT, {"default": 5, "min": 1, "max": 16, "step": 1, "tooltip": "视频时长(秒)，viduq3系列支持1-16秒，viduq2系列支持1-8秒"}),
                 "resolution": (RESOLUTIONS, {"default": "720p", "tooltip": "分辨率"}),
                 "movement_amplitude": (MOVEMENT_AMPLITUDES, {"default": "auto", "tooltip": "运动幅度"}),

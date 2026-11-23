@@ -1,6 +1,6 @@
 """
 Vidu Reference2Video - 参考生视频模型
-Models: viduq3-turbo, viduq2
+Models: viduq2
 支持1-7张参考图片，生成具备主体一致的视频
 """
 import time
@@ -9,7 +9,7 @@ from .modelverse_api.utils import image_to_base64
 from comfy.comfy_types.node_typing import IO
 
 
-MODELS = ["viduq3-turbo", "viduq2"]
+MODELS = ["viduq2"]
 ASPECT_RATIOS = ["16:9", "9:16", "3:4", "4:3", "1:1"]
 RESOLUTIONS = ["540p", "720p", "1080p"]
 
@@ -17,7 +17,7 @@ RESOLUTIONS = ["540p", "720p", "1080p"]
 class ViduReference2VideoNode:
     """
     Vidu Reference2Video - 参考生视频
-    Models: viduq3-turbo, viduq2
+    Models: viduq2
     支持1-7张参考图片，生成具备主体一致的视频
     """
 
@@ -26,7 +26,7 @@ class ViduReference2VideoNode:
         return {
             "required": {
                 "client": ("MODELVERSE_API_CLIENT",),
-                "model": (MODELS, {"default": "viduq3-turbo", "tooltip": "viduq3-turbo: 生成快, viduq2: 旧版模型"}),
+                "model": (MODELS, {"default": "viduq2", "tooltip": "viduq2: 旧版模型"}),
                 "prompt": (IO.STRING, {"multiline": True, "default": "make it dance", "tooltip": "文本提示词，最长2000字符"}),
                 "duration": (IO.INT, {"default": 5, "min": 1, "max": 10, "step": 1, "tooltip": "视频时长(秒)"}),
                 "aspect_ratio": (ASPECT_RATIOS, {"default": "16:9", "tooltip": "长宽比"}),

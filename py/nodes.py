@@ -1,6 +1,9 @@
 import os
 import json
+import stat
 import configparser
+from secrets import compare_digest, token_urlsafe
+
 import torch
 import server
 from aiohttp import web
@@ -25,42 +28,114 @@ except Exception as e:
 
 secrets_path = os.path.join(parent_dir, 'secrets.json')
 
+# Per-process token required for state-changing requests. It is handed to the
+# ComfyUI web UI through /modelverse-secrets/token, so a cross-site request or a
+# plain browser navigation cannot read, overwrite or delete stored API keys.
+_secrets_token = token_urlsafe(32)
+
+
+def _secure_write(path, data):
+    """Write JSON with 0600 permissions (keys must never be world-readable)."""
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, stat.S_IRUSR | stat.S_IWUSR)
+    with os.fdopen(fd, 'w') as secrets_file:
+        json.dump(data, secrets_file, indent=2)
+    try:
+        os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
+    except OSError:
+        pass
+
 
 def load_secrets():
     if not os.path.exists(secrets_path):
-        with open(secrets_path, 'w') as secrets_file:
-            json.dump({}, secrets_file, indent=2)
+        _secure_write(secrets_path, {})
     with open(secrets_path) as secrets_file:
         return json.load(secrets_file)
 
 
 def save_secrets(secrets):
-    with open(secrets_path, 'w') as secrets_file:
-        json.dump(secrets, secrets_file, indent=2)
+    _secure_write(secrets_path, secrets)
 
 
-async def get_modelverse_secrets(_request):
-    return web.json_response(load_secrets())
+def _mask_secret(value):
+    if not value:
+        return ""
+    if len(value) <= 4:
+        return "*" * 15
+    return f"{value[:4]}{'*' * 15}"
+
+
+def _is_same_origin(request):
+    """Reject cross-site browser requests (CSRF / DNS rebinding)."""
+    origin = request.headers.get("Origin")
+    if origin is not None:
+        if origin == "null":
+            return False
+        host = request.headers.get("Host", "")
+        if origin.split("://", 1)[-1].split("/", 1)[0] != host:
+            return False
+    fetch_site = request.headers.get("Sec-Fetch-Site")
+    if fetch_site is not None and fetch_site != "same-origin":
+        return False
+    return True
+
+
+def _has_valid_token(request):
+    provided = request.headers.get("X-Modelverse-Secret-Token", "")
+    return compare_digest(provided.encode("utf-8", "surrogateescape"), _secrets_token.encode())
+
+
+def _forbidden():
+    return web.json_response({"error": "Forbidden"}, status=403)
+
+
+async def get_modelverse_secrets_token(request):
+    if not _is_same_origin(request):
+        return _forbidden()
+    return web.json_response({"token": _secrets_token})
+
+
+async def get_modelverse_secrets(request):
+    if not _is_same_origin(request):
+        return _forbidden()
+    return web.json_response({key: _mask_secret(value) for key, value in load_secrets().items()})
 
 
 async def set_modelverse_secret(request):
+    if not _is_same_origin(request) or not _has_valid_token(request):
+        return _forbidden()
     try:
         data = await request.json()
     except Exception:
         return web.json_response({"error": "Invalid or empty request body"}, status=400)
 
-    key = data.get("key", "").strip()
+    key = str(data.get("key", "")).strip()
     value = data.get("value", "")
+    old_key = str(data.get("old_key", "")).strip()
     if not key:
         return web.json_response({"error": "Key cannot be empty"}, status=400)
+    if not isinstance(value, str):
+        return web.json_response({"error": "Value must be a string"}, status=400)
 
     secrets = load_secrets()
-    secrets[key] = value
+    if old_key and old_key != key:
+        if old_key not in secrets:
+            return web.json_response({"error": "Key not found"}, status=404)
+        # Values are never sent to the browser, so a rename without a new value
+        # moves the stored key instead of overwriting it with an empty string.
+        stored_value = secrets.pop(old_key)
+        value = value or stored_value
+    elif not value and key not in secrets:
+        return web.json_response({"error": "Value cannot be empty"}, status=400)
+
+    if value:
+        secrets[key] = value
     save_secrets(secrets)
     return web.json_response({"ok": True})
 
 
 async def delete_modelverse_secret(request):
+    if not _is_same_origin(request) or not _has_valid_token(request):
+        return _forbidden()
     key = request.match_info["key"]
     secrets = load_secrets()
     if key not in secrets:
@@ -72,6 +147,7 @@ async def delete_modelverse_secret(request):
 
 
 if not getattr(server.PromptServer.instance, "_modelverse_secrets_registered", False):
+    server.PromptServer.instance.routes.get("/modelverse-secrets/token")(get_modelverse_secrets_token)
     server.PromptServer.instance.routes.get("/modelverse-secrets")(get_modelverse_secrets)
     server.PromptServer.instance.routes.post("/modelverse-secrets")(set_modelverse_secret)
     server.PromptServer.instance.routes.delete("/modelverse-secrets/{key}")(delete_modelverse_secret)
